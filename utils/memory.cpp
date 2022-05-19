@@ -1,8 +1,8 @@
 /**
-* @file src/utils/memory.cpp
-* @brief Memory utilities.
-* @copyright (c) 2017 Avast Software, licensed under the MIT license
-*/
+ * @file src/utils/memory.cpp
+ * @brief Memory utilities.
+ * @copyright (c) 2017 Avast Software, licensed under the MIT license
+ */
 
 #include <cstddef>
 
@@ -10,16 +10,16 @@
 #include "retdec/utils/os.h"
 
 #ifdef OS_WINDOWS
-	#include <windows.h>
+#include <windows.h>
 #elif defined(OS_MACOS) || defined(OS_BSD)
-	#include <sys/types.h>
-	#include <sys/sysctl.h>
+#include <sys/types.h>
+#include <sys/sysctl.h>
 #else
-	#include <sys/sysinfo.h>
+#include <sys/sysinfo.h>
 #endif
 
 #ifdef OS_POSIX
-	#include <sys/resource.h>
+#include <sys/resource.h>
 #endif
 
 namespace retdec {
@@ -30,12 +30,13 @@ namespace {
 #if defined(OS_POSIX) && !defined(OS_MACOS)
 
 /**
-* @brief Implementation of @c limitSystemMemory() on POSIX-compliant systems.
-*/
-bool limitSystemMemoryOnPOSIX(std::size_t limit) {
+ * @brief Implementation of @c limitSystemMemory() on POSIX-compliant systems.
+ */
+bool limitSystemMemoryOnPOSIX(std::size_t limit)
+{
 	struct rlimit rl = {
-		.rlim_cur = static_cast<rlim_t>(limit),        // Soft limit.
-		.rlim_max = RLIM_INFINITY // Hard limit (ceiling for rlim_cur).
+		.rlim_cur = static_cast<rlim_t>(limit), // Soft limit.
+		.rlim_max = RLIM_INFINITY               // Hard limit (ceiling for rlim_cur).
 	};
 	auto rc = setrlimit(RLIMIT_AS, &rl);
 	return rc == 0;
@@ -46,9 +47,10 @@ bool limitSystemMemoryOnPOSIX(std::size_t limit) {
 #ifdef OS_WINDOWS
 
 /**
-* @brief Implementation of @c getTotalSystemMemory() on Windows.
-*/
-std::size_t getTotalSystemMemoryOnWindows() {
+ * @brief Implementation of @c getTotalSystemMemory() on Windows.
+ */
+std::size_t getTotalSystemMemoryOnWindows()
+{
 	MEMORYSTATUSEX memoryStatus;
 	memoryStatus.dwLength = sizeof(memoryStatus);
 	bool succeeded = GlobalMemoryStatusEx(&memoryStatus);
@@ -56,18 +58,21 @@ std::size_t getTotalSystemMemoryOnWindows() {
 }
 
 /**
-* @brief Assigns the current process into a new job and returns a handle to
-*     that job.
-*
-* When the process cannot be assigned to a job, it returns 0.
-*/
-HANDLE assignProcessToNewJob() {
+ * @brief Assigns the current process into a new job and returns a handle to
+ *     that job.
+ *
+ * When the process cannot be assigned to a job, it returns 0.
+ */
+HANDLE assignProcessToNewJob()
+{
 	auto jobHandle = CreateJobObject(nullptr, nullptr);
-	if (!jobHandle) {
+	if (!jobHandle)
+	{
 		return 0;
 	}
 
-	if (!AssignProcessToJobObject(jobHandle, GetCurrentProcess())) {
+	if (!AssignProcessToJobObject(jobHandle, GetCurrentProcess()))
+	{
 		return 0;
 	}
 
@@ -75,9 +80,10 @@ HANDLE assignProcessToNewJob() {
 }
 
 /**
-* @brief Implementation of @c limitSystemMemory() on Windows.
-*/
-bool limitSystemMemoryOnWindows(std::size_t limit) {
+ * @brief Implementation of @c limitSystemMemory() on Windows.
+ */
+bool limitSystemMemoryOnWindows(std::size_t limit)
+{
 	// On Windows 7, AssignProcessToJobObject() fails when the current process
 	// has already been attached to a job. Therefore, we have to remember the
 	// job and use it in all subsequent calls to limitSystemMemoryOnWindows().
@@ -89,22 +95,19 @@ bool limitSystemMemoryOnWindows(std::size_t limit) {
 	extendedInfo.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_PROCESS_MEMORY;
 	extendedInfo.ProcessMemoryLimit = limit;
 
-	auto succeeded = SetInformationJobObject(
-		jobHandle,
-		JobObjectExtendedLimitInformation,
-		&extendedInfo,
-		sizeof(extendedInfo)
-	);
+	auto succeeded =
+		SetInformationJobObject(jobHandle, JobObjectExtendedLimitInformation, &extendedInfo, sizeof(extendedInfo));
 	return succeeded;
 }
 
 #elif defined(OS_MACOS)
 
 /**
-* @brief Implementation of @c getTotalSystemMemory() on MacOS.
-*/
-std::size_t getTotalSystemMemoryOnMacOS() {
-	int what[] = { CTL_HW, HW_MEMSIZE };
+ * @brief Implementation of @c getTotalSystemMemory() on MacOS.
+ */
+std::size_t getTotalSystemMemoryOnMacOS()
+{
+	int what[] = {CTL_HW, HW_MEMSIZE};
 	std::size_t value = 0;
 	std::size_t length = sizeof(value);
 	auto rc = sysctl(what, 2, &value, &length, nullptr, 0);
@@ -112,9 +115,10 @@ std::size_t getTotalSystemMemoryOnMacOS() {
 }
 
 /**
-* @brief Implementation of @c limitSystemMemory() on MacOS.
-*/
-bool limitSystemMemoryOnMacOS(std::size_t limit) {
+ * @brief Implementation of @c limitSystemMemory() on MacOS.
+ */
+bool limitSystemMemoryOnMacOS(std::size_t limit)
+{
 	// Warning: We can't limit memory on macOS. Before macOS 12,
 	// limitSystemMemoryOnPOSIX() does not actually do anything on macOS (it
 	// just succeeds). Since macOS 12, it returns an error and RetDec cannot
@@ -136,12 +140,13 @@ bool limitSystemMemoryOnMacOS(std::size_t limit) {
 #elif defined(OS_BSD)
 
 /**
-* @brief Implementation of @c getTotalSystemMemory() on *BSD.
-*
-* AKA FreeBSD, DragonFly, NetBSD, OpenBSD, TrueOS, PCBSD
-*/
-std::size_t getTotalSystemMemoryOnBSD() {
-	int what[] = { CTL_HW, HW_PHYSMEM };
+ * @brief Implementation of @c getTotalSystemMemory() on *BSD.
+ *
+ * AKA FreeBSD, DragonFly, NetBSD, OpenBSD, TrueOS, PCBSD
+ */
+std::size_t getTotalSystemMemoryOnBSD()
+{
+	int what[] = {CTL_HW, HW_PHYSMEM};
 	std::size_t value = 0;
 	std::size_t length = sizeof(value);
 	auto rc = sysctl(what, 2, &value, &length, nullptr, 0);
@@ -149,29 +154,32 @@ std::size_t getTotalSystemMemoryOnBSD() {
 }
 
 /**
-* @brief Implementation of @c limitSystemMemory() on *BSD.
-*
-* AKA FreeBSD, DragonFly, NetBSD, OpenBSD, TrueOS, PCBSD
-*/
-bool limitSystemMemoryOnBSD(std::size_t limit) {
+ * @brief Implementation of @c limitSystemMemory() on *BSD.
+ *
+ * AKA FreeBSD, DragonFly, NetBSD, OpenBSD, TrueOS, PCBSD
+ */
+bool limitSystemMemoryOnBSD(std::size_t limit)
+{
 	return limitSystemMemoryOnPOSIX(limit);
 }
 
 #else
 
 /*
-* @brief Implementation of @c getTotalSystemMemory() on Linux.
-*/
-std::size_t getTotalSystemMemoryOnLinux() {
+ * @brief Implementation of @c getTotalSystemMemory() on Linux.
+ */
+std::size_t getTotalSystemMemoryOnLinux()
+{
 	struct sysinfo system_info;
 	auto rc = sysinfo(&system_info);
 	return rc == 0 ? system_info.totalram : 0;
 }
 
 /**
-* @brief Implementation of @c limitSystemMemory() on Linux.
-*/
-bool limitSystemMemoryOnLinux(std::size_t limit) {
+ * @brief Implementation of @c limitSystemMemory() on Linux.
+ */
+bool limitSystemMemoryOnLinux(std::size_t limit)
+{
 	return limitSystemMemoryOnPOSIX(limit);
 }
 
@@ -180,11 +188,12 @@ bool limitSystemMemoryOnLinux(std::size_t limit) {
 } // anonymous namespace
 
 /**
-* @brief Returns the total size of system RAM (in bytes).
-*
-* When the size cannot be obtained, it returns @c 0.
-*/
-std::size_t getTotalSystemMemory() {
+ * @brief Returns the total size of system RAM (in bytes).
+ *
+ * When the size cannot be obtained, it returns @c 0.
+ */
+std::size_t getTotalSystemMemory()
+{
 #ifdef OS_WINDOWS
 	return getTotalSystemMemoryOnWindows();
 #elif defined(OS_MACOS)
@@ -197,17 +206,19 @@ std::size_t getTotalSystemMemory() {
 }
 
 /**
-* @brief Limits system memory to the given size (in bytes).
-*
-* @return @c true if the limiting succeeded, @c false otherwise.
-*
-* When @a limit is @c 0, it immediately returns @c false.
-*
-* This function is not reentrant, i.e. it is not safe to call it simultaneously
-* from multiple threads.
-*/
-bool limitSystemMemory(std::size_t limit) {
-	if (limit == 0) {
+ * @brief Limits system memory to the given size (in bytes).
+ *
+ * @return @c true if the limiting succeeded, @c false otherwise.
+ *
+ * When @a limit is @c 0, it immediately returns @c false.
+ *
+ * This function is not reentrant, i.e. it is not safe to call it simultaneously
+ * from multiple threads.
+ */
+bool limitSystemMemory(std::size_t limit)
+{
+	if (limit == 0)
+	{
 		return false;
 	}
 
@@ -223,11 +234,13 @@ bool limitSystemMemory(std::size_t limit) {
 }
 
 /**
-* @brief Limits system memory to half of the total memory.
-*/
-bool limitSystemMemoryToHalfOfTotalSystemMemory() {
+ * @brief Limits system memory to half of the total memory.
+ */
+bool limitSystemMemoryToHalfOfTotalSystemMemory()
+{
 	auto totalSize = getTotalSystemMemory();
-	if (totalSize == 0) {
+	if (totalSize == 0)
+	{
 		return false;
 	}
 

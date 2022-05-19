@@ -4,10 +4,10 @@
  * @copyright (c) 2017 Avast Software, licensed under the MIT license
  */
 
+#include "retdec/utils/ord_lookup.h"
 #include "retdec/utils/container.h"
 #include "retdec/utils/conversion.h"
 #include "retdec/utils/string.h"
-#include "retdec/utils/ord_lookup.h"
 
 namespace retdec {
 namespace utils {
@@ -15,8 +15,7 @@ namespace utils {
 // Ordinal-name LUT for YARA compatible import hash computation.
 // This must stay compatible with YARA's ord_lookup function
 
-std::map<std::size_t, std::string> winsock32Map =
-{
+std::map<std::size_t, std::string> winsock32Map = {
 	{1, "accept"},
 	{2, "bind"},
 	{3, "closesocket"},
@@ -133,11 +132,9 @@ std::map<std::size_t, std::string> winsock32Map =
 	{115, "WSAStartup"},
 	{116, "WSACleanup"},
 	{151, "__WSAFDIsSet"},
-	{500, "WEP"}
-};
+	{500, "WEP"}};
 
-std::map<std::size_t, std::string> oleaut32Map =
-{
+std::map<std::size_t, std::string> oleaut32Map = {
 	{2, "SysAllocString"},
 	{3, "SysReAllocString"},
 	{4, "SysAllocStringLen"},
@@ -535,8 +532,7 @@ std::map<std::size_t, std::string> oleaut32Map =
 	{440, "VarUI8FromUI4"},
 	{441, "VarUI8FromDec"},
 	{442, "RegisterTypeLibForUser"},
-	{443, "UnRegisterTypeLibForUser"}
-};
+	{443, "UnRegisterTypeLibForUser"}};
 
 /**
  * Lookup import name for given library name and ordinal number
@@ -549,7 +545,7 @@ std::string ordLookUp(const std::string& libName, const std::size_t& ordNum, boo
 {
 	std::string res;
 
-	if(areEqualCaseInsensitive(libName, "ws2_32.dll") || areEqualCaseInsensitive(libName, "wsock32.dll"))
+	if (areEqualCaseInsensitive(libName, "ws2_32.dll") || areEqualCaseInsensitive(libName, "wsock32.dll"))
 	{
 		res = mapGetValueOrDefault(winsock32Map, ordNum);
 	}
@@ -558,8 +554,7 @@ std::string ordLookUp(const std::string& libName, const std::size_t& ordNum, boo
 		res = mapGetValueOrDefault(oleaut32Map, ordNum);
 	}
 
-	if(res.empty() && forceNameFromOrdinal)
-		res = "ord" + std::to_string(ordNum);
+	if (res.empty() && forceNameFromOrdinal) res = "ord" + std::to_string(ordNum);
 	return res;
 }
 

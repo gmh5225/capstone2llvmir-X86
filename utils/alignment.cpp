@@ -22,10 +22,7 @@ namespace utils {
  * @return True if value is aligned to given alignment, false otherwise.
  *   If alignment is not power of 2 the return value is undefined.
  */
-bool isAligned(
-		std::uint64_t value,
-		std::uint64_t alignment,
-		std::uint64_t& remainder)
+bool isAligned(std::uint64_t value, std::uint64_t alignment, std::uint64_t& remainder)
 {
 	return (remainder = (value & (alignment - 1))) == 0;
 }

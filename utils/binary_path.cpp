@@ -10,8 +10,7 @@
 
 namespace {
 
-std::string getStringThisBinaryPath(
-		std::size_t &directorySize)
+std::string getStringThisBinaryPath(std::size_t& directorySize)
 {
 	int pathSize = 0;
 	int dirPathSize = 0;
@@ -66,7 +65,8 @@ fs::path getThisBinaryDirectoryPath()
 	std::string path = getStringThisBinaryPath(dirPathSize);
 
 	// Remove file from path.
-	if (!path.empty()) {
+	if (!path.empty())
+	{
 		path.erase(dirPathSize + 1);
 	}
 

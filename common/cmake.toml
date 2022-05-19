@@ -1,0 +1,18 @@
+
+[target.retdec-common]
+type = "static"
+
+sources = [
+    "**.cpp",
+    "**.h"
+]
+
+include-directories = [
+"${CMAKE_SOURCE_DIR}/include", 
+"${CMAKE_SOURCE_DIR}/include/retdec",
+"${CMAKE_SOURCE_DIR}/include/whereami"
+]
+
+link-libraries = ["retdec-utils"]
+compile-features = ["cxx_std_20"]
+

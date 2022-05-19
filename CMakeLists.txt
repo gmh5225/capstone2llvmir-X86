@@ -44,6 +44,16 @@ endif()
 add_subdirectory(utils)
 set(CMAKE_FOLDER ${CMKR_CMAKE_FOLDER})
 
+# common
+set(CMKR_CMAKE_FOLDER ${CMAKE_FOLDER})
+if(CMAKE_FOLDER)
+	set(CMAKE_FOLDER "${CMAKE_FOLDER}/common")
+else()
+	set(CMAKE_FOLDER common)
+endif()
+add_subdirectory(common)
+set(CMAKE_FOLDER ${CMKR_CMAKE_FOLDER})
+
 # Target capstone2llvmir-X86
 set(CMKR_TARGET capstone2llvmir-X86)
 set(capstone2llvmir-X86_SOURCES "")

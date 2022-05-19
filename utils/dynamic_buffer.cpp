@@ -17,12 +17,7 @@ namespace utils {
  *
  * @param endianness Endianness of the bytes in the buffer.
  */
-DynamicBuffer::DynamicBuffer(Endianness endianness)
-		: _data()
-		, _endianness(endianness)
-		, _capacity(0)
-{
-}
+DynamicBuffer::DynamicBuffer(Endianness endianness): _data(), _endianness(endianness), _capacity(0) {}
 
 /**
  * Creates the DynamicBuffer object with specified capacity and endianness.
@@ -30,8 +25,8 @@ DynamicBuffer::DynamicBuffer(Endianness endianness)
  * @param capacity Capacity of the buffer.
  * @param endianness Endianness of the bytes in the buffer.
  */
-DynamicBuffer::DynamicBuffer(uint32_t capacity, Endianness endianness)
-	: _data(), _endianness(endianness), _capacity(capacity)
+DynamicBuffer::DynamicBuffer(uint32_t capacity, Endianness endianness):
+	_data(), _endianness(endianness), _capacity(capacity)
 {
 	_data.reserve(capacity);
 }
@@ -43,26 +38,18 @@ DynamicBuffer::DynamicBuffer(uint32_t capacity, Endianness endianness)
  * @param data The bytes to initialize the buffer with.
  * @param endianness Endiannes of the bytes in the buffer.
  */
-DynamicBuffer::DynamicBuffer(
-		const std::vector<uint8_t>& data,
-		Endianness endianness)
-		: _data(data)
-		, _endianness(endianness)
-		, _capacity(static_cast<uint32_t>(data.size()))
-{
-}
+DynamicBuffer::DynamicBuffer(const std::vector<uint8_t>& data, Endianness endianness):
+	_data(data), _endianness(endianness), _capacity(static_cast<uint32_t>(data.size()))
+{}
 
 /**
  * Creates the copy of the DynamicBuffer object.
  *
  * @param dynamicBuffer Buffer to copy.
  */
-DynamicBuffer::DynamicBuffer(const DynamicBuffer& dynamicBuffer)
-		: _data(dynamicBuffer._data)
-		, _endianness(dynamicBuffer._endianness)
-		, _capacity(dynamicBuffer._capacity)
-{
-}
+DynamicBuffer::DynamicBuffer(const DynamicBuffer& dynamicBuffer):
+	_data(dynamicBuffer._data), _endianness(dynamicBuffer._endianness), _capacity(dynamicBuffer._capacity)
+{}
 
 /**
  * Creates the copy of the DynamicBuffer object, but only the
@@ -73,16 +60,10 @@ DynamicBuffer::DynamicBuffer(const DynamicBuffer& dynamicBuffer)
  *        start the copying.
  * @param amount Number of bytes from startPos to copy.
  */
-DynamicBuffer::DynamicBuffer(
-		const DynamicBuffer& dynamicBuffer,
-		uint32_t startPos,
-		uint32_t amount)
+DynamicBuffer::DynamicBuffer(const DynamicBuffer& dynamicBuffer, uint32_t startPos, uint32_t amount)
 {
 	std::vector<uint8_t> tmpBuffer = dynamicBuffer.getBuffer();
-	std::vector<uint8_t> buffer(
-			tmpBuffer.begin() + startPos,
-			tmpBuffer.begin() + startPos + amount
-	);
+	std::vector<uint8_t> buffer(tmpBuffer.begin() + startPos, tmpBuffer.begin() + startPos + amount);
 
 	_data = buffer;
 	_endianness = dynamicBuffer._endianness;
@@ -96,7 +77,7 @@ DynamicBuffer::DynamicBuffer(
  *
  * @return The new DynamicBuffer object.
  */
-DynamicBuffer& DynamicBuffer::operator =(DynamicBuffer rhs)
+DynamicBuffer& DynamicBuffer::operator=(DynamicBuffer rhs)
 {
 	std::swap(_data, rhs._data);
 	std::swap(_endianness, rhs._endianness);
@@ -166,8 +147,7 @@ uint32_t DynamicBuffer::getRealDataSize() const
  */
 void DynamicBuffer::erase(uint32_t startPos, uint32_t amount)
 {
-	if (startPos >= _data.size())
-		return;
+	if (startPos >= _data.size()) return;
 
 	amount = startPos + amount > _data.size() ? _data.size() - startPos : amount;
 	_data.erase(_data.begin() + startPos, _data.begin() + startPos + amount);
@@ -200,7 +180,7 @@ const uint8_t* DynamicBuffer::getRawBuffer() const
  */
 void DynamicBuffer::forEach(const std::function<void(uint8_t&)>& func)
 {
-	for (uint8_t& byte : _data)
+	for (uint8_t& byte: _data)
 		func(byte);
 }
 
@@ -212,9 +192,7 @@ void DynamicBuffer::forEach(const std::function<void(uint8_t&)>& func)
  */
 void DynamicBuffer::forEachReverse(const std::function<void(uint8_t&)>& func)
 {
-	for (std::vector<uint8_t>::reverse_iterator itr = _data.rbegin();
-			itr != _data.rend();
-			++itr)
+	for (std::vector<uint8_t>::reverse_iterator itr = _data.rbegin(); itr != _data.rend(); ++itr)
 	{
 		uint8_t& byte = *itr;
 		func(byte);
@@ -236,8 +214,7 @@ std::string DynamicBuffer::readString(uint32_t pos, uint32_t maxLength) const
 	std::string str;
 	char ch;
 
-	while (((ch = read<char>(pos++)) != 0)
-			&& (!maxLength || str.length() < maxLength))
+	while (((ch = read<char>(pos++)) != 0) && (!maxLength || str.length() < maxLength))
 		str += ch;
 
 	return str;
@@ -251,19 +228,14 @@ std::string DynamicBuffer::readString(uint32_t pos, uint32_t maxLength) const
  * @param repeatAmount The number of times the byte is written into the
  *        buffer starting from pos including.
  */
-void DynamicBuffer::writeRepeatingByte(
-		uint8_t byte,
-		uint32_t pos,
-		uint32_t repeatAmount)
+void DynamicBuffer::writeRepeatingByte(uint8_t byte, uint32_t pos, uint32_t repeatAmount)
 {
-	if (pos + repeatAmount > _capacity)
-		repeatAmount = _capacity - pos;
+	if (pos + repeatAmount > _capacity) repeatAmount = _capacity - pos;
 
-	if (pos + repeatAmount > _data.size())
-		_data.resize(pos + repeatAmount);
+	if (pos + repeatAmount > _data.size()) _data.resize(pos + repeatAmount);
 
 	memset(&_data[pos], byte, repeatAmount);
 }
 
-} // namespace unpacker
+} // namespace utils
 } // namespace retdec
