@@ -9,9 +9,16 @@ config = true
 required = true
 config = true
 
-[target.cmkr-llvm-template]
-type = "executable"
-sources = ["src/main.cpp"]
+[subdir.utils]
+
+[target.capstone2llvmir-X86]
+type = "static"
+sources = [
+    "capstone2llvmir/**.cpp", 
+    "capstone2llvmir/**.h", 
+    "capstone2llvmir/x86/**.cpp",
+    "capstone2llvmir/x86/**.h"
+    ]
 include-directories = ["${LLVM_INCLUDE_DIRS}", "${CLANG_INCLUDE_DIRS}"]
 link-directories = ["${LLVM_LIBRARY_DIRS}", "${CLANG_LIBRARY_DIRS}"]
 add-definitions = ["${LLVM_DEFINITIONS}", "${CLANG_DEFINITIONS}"]
@@ -21,4 +28,5 @@ link-libraries = [
 "LLVMCore",
 "LLVMCodeGen"
 ]
+
 

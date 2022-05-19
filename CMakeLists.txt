@@ -27,57 +27,71 @@ if(CMKR_ROOT_PROJECT)
 	configure_file(cmake.toml cmake.toml COPYONLY)
 endif()
 
-project(LL-Testing
-	DESCRIPTION
-		LL-Testing.
-)
+project(capstone2llvmir-X86)
 
 # Packages
 find_package(LLVM REQUIRED CONFIG)
 
 find_package(Clang REQUIRED CONFIG)
 
-# Target LL-Testing
-set(CMKR_TARGET LL-Testing)
-set(LL-Testing_SOURCES "")
+# utils
+set(CMKR_CMAKE_FOLDER ${CMAKE_FOLDER})
+if(CMAKE_FOLDER)
+	set(CMAKE_FOLDER "${CMAKE_FOLDER}/utils")
+else()
+	set(CMAKE_FOLDER utils)
+endif()
+add_subdirectory(utils)
+set(CMAKE_FOLDER ${CMKR_CMAKE_FOLDER})
 
-list(APPEND LL-Testing_SOURCES
-	"src/main.cpp"
+# Target capstone2llvmir-X86
+set(CMKR_TARGET capstone2llvmir-X86)
+set(capstone2llvmir-X86_SOURCES "")
+
+list(APPEND capstone2llvmir-X86_SOURCES
+	"capstone2llvmir/capstone2llvmir.cpp"
+	"capstone2llvmir/capstone2llvmir_impl.cpp"
+	"capstone2llvmir/exceptions.cpp"
+	"capstone2llvmir/llvmir_utils.cpp"
+	"capstone2llvmir/x86/x86.cpp"
+	"capstone2llvmir/x86/x86_init.cpp"
+	"capstone2llvmir/capstone2llvmir_impl.h"
+	"capstone2llvmir/capstone_utils.h"
+	"capstone2llvmir/llvmir_utils.h"
+	"capstone2llvmir/x86/x86_impl.h"
+	"capstone2llvmir/x86/x86.cpp"
+	"capstone2llvmir/x86/x86_init.cpp"
+	"capstone2llvmir/x86/x86_impl.h"
 )
 
-list(APPEND LL-Testing_SOURCES
+list(APPEND capstone2llvmir-X86_SOURCES
 	cmake.toml
 )
 
-set(CMKR_SOURCES ${LL-Testing_SOURCES})
-add_executable(LL-Testing)
+set(CMKR_SOURCES ${capstone2llvmir-X86_SOURCES})
+add_library(capstone2llvmir-X86 STATIC)
 
-if(LL-Testing_SOURCES)
-	target_sources(LL-Testing PRIVATE ${LL-Testing_SOURCES})
+if(capstone2llvmir-X86_SOURCES)
+	target_sources(capstone2llvmir-X86 PRIVATE ${capstone2llvmir-X86_SOURCES})
 endif()
 
-get_directory_property(CMKR_VS_STARTUP_PROJECT DIRECTORY ${PROJECT_SOURCE_DIR} DEFINITION VS_STARTUP_PROJECT)
-if(NOT CMKR_VS_STARTUP_PROJECT)
-	set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT LL-Testing)
-endif()
-
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${LL-Testing_SOURCES})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${capstone2llvmir-X86_SOURCES})
 
 add_definitions(
 		${LLVM_DEFINITIONS}
 		${CLANG_DEFINITIONS}
 )
-target_include_directories(LL-Testing PRIVATE
+target_include_directories(capstone2llvmir-X86 PUBLIC
 	${LLVM_INCLUDE_DIRS}
 	${CLANG_INCLUDE_DIRS}
 )
 
-target_link_directories(LL-Testing PRIVATE
+target_link_directories(capstone2llvmir-X86 PUBLIC
 	${LLVM_LIBRARY_DIRS}
 	${CLANG_LIBRARY_DIRS}
 )
 
-target_link_libraries(LL-Testing PRIVATE
+target_link_libraries(capstone2llvmir-X86 PUBLIC
 	LLVMSupport
 	LLVMAnalysis
 	LLVMCore
