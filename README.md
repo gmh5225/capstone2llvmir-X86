@@ -1,2 +1,2 @@
-# cmkr-llvm-template
+# capstone2llvmir-X86
 
