@@ -1,0 +1,25 @@
+# Reference: https://build-cpp.github.io/cmkr/cmake-toml
+[project]
+name = "cmkr-llvm-template"
+description = "cmkr-llvm-template"
+
+[find-package.LLVM]
+required = true
+config = true
+[find-package.Clang]
+required = true
+config = true
+
+[target.cmkr-llvm-template]
+type = "executable"
+sources = ["src/main.cpp"]
+include-directories = ["${LLVM_INCLUDE_DIRS}", "${CLANG_INCLUDE_DIRS}"]
+link-directories = ["${LLVM_LIBRARY_DIRS}", "${CLANG_LIBRARY_DIRS}"]
+add-definitions = ["${LLVM_DEFINITIONS}", "${CLANG_DEFINITIONS}"]
+link-libraries = [
+"LLVMSupport", 
+"LLVMAnalysis",
+"LLVMCore",
+"LLVMCodeGen"
+]
+
