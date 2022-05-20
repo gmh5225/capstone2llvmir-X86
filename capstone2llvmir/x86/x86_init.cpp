@@ -22,68 +22,67 @@ void Capstone2LlvmIrTranslatorX86_impl::initializeArchSpecific()
 
 void Capstone2LlvmIrTranslatorX86_impl::initializeRegNameMap()
 {
-	std::map<uint32_t, std::string> r2n =
-	{
-			// x86_reg_rflags
-			//
-			{X86_REG_CF, "cf"},
-			{X86_REG_PF, "pf"},
-			{X86_REG_AF, "az"},
-			{X86_REG_ZF, "zf"},
-			{X86_REG_SF, "sf"},
-			{X86_REG_TF, "tf"},
-			{X86_REG_IF, "if"},
-			{X86_REG_DF, "df"},
-			{X86_REG_OF, "of"},
-			{X86_REG_IOPL, "iopl"},
-			{X86_REG_NT, "nt"},
-			{X86_REG_RF, "rf"},
-			{X86_REG_VM, "vm"},
-			{X86_REG_AC, "ac"},
-			{X86_REG_VIF, "vif"},
-			{X86_REG_VIP, "vip"},
-			{X86_REG_ID, "id"},
+	std::map<uint32_t, std::string> r2n = {
+		// x86_reg_rflags
+		//
+		{X86_REG_CF, "cf"},
+		{X86_REG_PF, "pf"},
+		{X86_REG_AF, "az"},
+		{X86_REG_ZF, "zf"},
+		{X86_REG_SF, "sf"},
+		{X86_REG_TF, "tf"},
+		{X86_REG_IF, "if"},
+		{X86_REG_DF, "df"},
+		{X86_REG_OF, "of"},
+		{X86_REG_IOPL, "iopl"},
+		{X86_REG_NT, "nt"},
+		{X86_REG_RF, "rf"},
+		{X86_REG_VM, "vm"},
+		{X86_REG_AC, "ac"},
+		{X86_REG_VIF, "vif"},
+		{X86_REG_VIP, "vip"},
+		{X86_REG_ID, "id"},
 
-			// x87_reg_status
-			//
-			{X87_REG_IE, "fpu_stat_IE"},
-			{X87_REG_DE, "fpu_stat_DE"},
-			{X87_REG_ZE, "fpu_stat_ZE"},
-			{X87_REG_OE, "fpu_stat_OE"},
-			{X87_REG_UE, "fpu_stat_UE"},
-			{X87_REG_PE, "fpu_stat_PE"},
-			{X87_REG_SF, "fpu_stat_SF"},
-			{X87_REG_ES, "fpu_stat_ES"},
-			{X87_REG_C0, "fpu_stat_C0"},
-			{X87_REG_C1, "fpu_stat_C1"},
-			{X87_REG_C2, "fpu_stat_C2"},
-			{X87_REG_C3, "fpu_stat_C3"},
-			{X87_REG_TOP, "fpu_stat_TOP"},
-			{X87_REG_B, "fpu_stat_B"},
+		// x87_reg_status
+		//
+		{X87_REG_IE, "fpu_stat_IE"},
+		{X87_REG_DE, "fpu_stat_DE"},
+		{X87_REG_ZE, "fpu_stat_ZE"},
+		{X87_REG_OE, "fpu_stat_OE"},
+		{X87_REG_UE, "fpu_stat_UE"},
+		{X87_REG_PE, "fpu_stat_PE"},
+		{X87_REG_SF, "fpu_stat_SF"},
+		{X87_REG_ES, "fpu_stat_ES"},
+		{X87_REG_C0, "fpu_stat_C0"},
+		{X87_REG_C1, "fpu_stat_C1"},
+		{X87_REG_C2, "fpu_stat_C2"},
+		{X87_REG_C3, "fpu_stat_C3"},
+		{X87_REG_TOP, "fpu_stat_TOP"},
+		{X87_REG_B, "fpu_stat_B"},
 
-			// x87_reg_control
-			//
-			{X87_REG_IM, "fpu_control_IM"},
-			{X87_REG_DM, "fpu_control_DM"},
-			{X87_REG_ZM, "fpu_control_ZM"},
-			{X87_REG_OM, "fpu_control_OM"},
-			{X87_REG_UM, "fpu_control_UM"},
-			{X87_REG_PM, "fpu_control_PM"},
-			{X87_REG_PC, "fpu_control_PC"},
-			{X87_REG_RC, "fpu_control_RC"},
-			{X87_REG_X, "fpu_control_X"},
+		// x87_reg_control
+		//
+		{X87_REG_IM, "fpu_control_IM"},
+		{X87_REG_DM, "fpu_control_DM"},
+		{X87_REG_ZM, "fpu_control_ZM"},
+		{X87_REG_OM, "fpu_control_OM"},
+		{X87_REG_UM, "fpu_control_UM"},
+		{X87_REG_PM, "fpu_control_PM"},
+		{X87_REG_PC, "fpu_control_PC"},
+		{X87_REG_RC, "fpu_control_RC"},
+		{X87_REG_X, "fpu_control_X"},
 
-			// FPU data registers
-			// They are named as ST(X) in Capstone, which is not good for us.
-			//
-			{X86_REG_ST0, "st0"},
-			{X86_REG_ST1, "st1"},
-			{X86_REG_ST2, "st2"},
-			{X86_REG_ST3, "st3"},
-			{X86_REG_ST4, "st4"},
-			{X86_REG_ST5, "st5"},
-			{X86_REG_ST6, "st6"},
-			{X86_REG_ST7, "st7"},
+		// FPU data registers
+		// They are named as ST(X) in Capstone, which is not good for us.
+		//
+		{X86_REG_ST0, "st0"},
+		{X86_REG_ST1, "st1"},
+		{X86_REG_ST2, "st2"},
+		{X86_REG_ST3, "st3"},
+		{X86_REG_ST4, "st4"},
+		{X86_REG_ST5, "st5"},
+		{X86_REG_ST6, "st6"},
+		{X86_REG_ST7, "st7"},
 	};
 
 	_reg2name = std::move(r2n);
@@ -106,318 +105,317 @@ void Capstone2LlvmIrTranslatorX86_impl::initializeRegTypeMap()
 
 	auto* defTy = _origBasicMode == CS_MODE_64 ? i64 : i32;
 
-	std::map<uint32_t, llvm::Type*> r2t =
-	{
-			// x86_reg
-			//
-			{X86_REG_AH, i8},
-			{X86_REG_AL, i8},
-			{X86_REG_CH, i8},
-			{X86_REG_CL, i8},
-			{X86_REG_DH, i8},
-			{X86_REG_DL, i8},
-			{X86_REG_BH, i8},
-			{X86_REG_BL, i8},
-			{X86_REG_SPL, i8},
-			{X86_REG_BPL, i8},
-			{X86_REG_DIL, i8},
-			{X86_REG_SIL, i8},
-			{X86_REG_R8B, i8},
-			{X86_REG_R9B, i8},
-			{X86_REG_R10B, i8},
-			{X86_REG_R11B, i8},
-			{X86_REG_R12B, i8},
-			{X86_REG_R13B, i8},
-			{X86_REG_R14B, i8},
-			{X86_REG_R15B, i8},
+	std::map<uint32_t, llvm::Type*> r2t = {
+		// x86_reg
+		//
+		{X86_REG_AH, i8},
+		{X86_REG_AL, i8},
+		{X86_REG_CH, i8},
+		{X86_REG_CL, i8},
+		{X86_REG_DH, i8},
+		{X86_REG_DL, i8},
+		{X86_REG_BH, i8},
+		{X86_REG_BL, i8},
+		{X86_REG_SPL, i8},
+		{X86_REG_BPL, i8},
+		{X86_REG_DIL, i8},
+		{X86_REG_SIL, i8},
+		{X86_REG_R8B, i8},
+		{X86_REG_R9B, i8},
+		{X86_REG_R10B, i8},
+		{X86_REG_R11B, i8},
+		{X86_REG_R12B, i8},
+		{X86_REG_R13B, i8},
+		{X86_REG_R14B, i8},
+		{X86_REG_R15B, i8},
 
-			{X86_REG_AX, i16},
-			{X86_REG_CX, i16},
-			{X86_REG_DX, i16},
-			{X86_REG_BP, i16},
-			{X86_REG_BX, i16},
-			{X86_REG_DI, i16},
-			{X86_REG_SP, i16},
-			{X86_REG_SI, i16},
-			{X86_REG_SS, i16},
-			{X86_REG_CS, i16},
-			{X86_REG_DS, i16},
-			{X86_REG_ES, i16},
-			{X86_REG_FS, i16},
-			{X86_REG_GS, i16},
-			{X86_REG_R8W, i16},
-			{X86_REG_R9W, i16},
-			{X86_REG_R10W, i16},
-			{X86_REG_R11W, i16},
-			{X86_REG_R12W, i16},
-			{X86_REG_R13W, i16},
-			{X86_REG_R14W, i16},
-			{X86_REG_R15W, i16},
-			{X86_REG_IP, i16},
+		{X86_REG_AX, i16},
+		{X86_REG_CX, i16},
+		{X86_REG_DX, i16},
+		{X86_REG_BP, i16},
+		{X86_REG_BX, i16},
+		{X86_REG_DI, i16},
+		{X86_REG_SP, i16},
+		{X86_REG_SI, i16},
+		{X86_REG_SS, i16},
+		{X86_REG_CS, i16},
+		{X86_REG_DS, i16},
+		{X86_REG_ES, i16},
+		{X86_REG_FS, i16},
+		{X86_REG_GS, i16},
+		{X86_REG_R8W, i16},
+		{X86_REG_R9W, i16},
+		{X86_REG_R10W, i16},
+		{X86_REG_R11W, i16},
+		{X86_REG_R12W, i16},
+		{X86_REG_R13W, i16},
+		{X86_REG_R14W, i16},
+		{X86_REG_R15W, i16},
+		{X86_REG_IP, i16},
 
-			{X86_REG_EAX, i32},
-			{X86_REG_EBP, i32},
-			{X86_REG_EBX, i32},
-			{X86_REG_ECX, i32},
-			{X86_REG_EDI, i32},
-			{X86_REG_EDX, i32},
-			{X86_REG_ESI, i32},
-			{X86_REG_ESP, i32},
-			{X86_REG_R8D, i32},
-			{X86_REG_R9D, i32},
-			{X86_REG_R10D, i32},
-			{X86_REG_R11D, i32},
-			{X86_REG_R12D, i32},
-			{X86_REG_R13D, i32},
-			{X86_REG_R14D, i32},
-			{X86_REG_R15D, i32},
-			{X86_REG_EIP, i32},
-			{X86_REG_EIZ, i32},
+		{X86_REG_EAX, i32},
+		{X86_REG_EBP, i32},
+		{X86_REG_EBX, i32},
+		{X86_REG_ECX, i32},
+		{X86_REG_EDI, i32},
+		{X86_REG_EDX, i32},
+		{X86_REG_ESI, i32},
+		{X86_REG_ESP, i32},
+		{X86_REG_R8D, i32},
+		{X86_REG_R9D, i32},
+		{X86_REG_R10D, i32},
+		{X86_REG_R11D, i32},
+		{X86_REG_R12D, i32},
+		{X86_REG_R13D, i32},
+		{X86_REG_R14D, i32},
+		{X86_REG_R15D, i32},
+		{X86_REG_EIP, i32},
+		{X86_REG_EIZ, i32},
 
-			{X86_REG_RAX, i64},
-			{X86_REG_RBP, i64},
-			{X86_REG_RBX, i64},
-			{X86_REG_RCX, i64},
-			{X86_REG_RDI, i64},
-			{X86_REG_RDX, i64},
-			{X86_REG_RIP, i64},
-			{X86_REG_RIZ, i64},
-			{X86_REG_RSI, i64},
-			{X86_REG_RSP, i64},
-			{X86_REG_R8, i64},
-			{X86_REG_R9, i64},
-			{X86_REG_R10, i64},
-			{X86_REG_R11, i64},
-			{X86_REG_R12, i64},
-			{X86_REG_R13, i64},
-			{X86_REG_R14, i64},
-			{X86_REG_R15, i64},
+		{X86_REG_RAX, i64},
+		{X86_REG_RBP, i64},
+		{X86_REG_RBX, i64},
+		{X86_REG_RCX, i64},
+		{X86_REG_RDI, i64},
+		{X86_REG_RDX, i64},
+		{X86_REG_RIP, i64},
+		{X86_REG_RIZ, i64},
+		{X86_REG_RSI, i64},
+		{X86_REG_RSP, i64},
+		{X86_REG_R8, i64},
+		{X86_REG_R9, i64},
+		{X86_REG_R10, i64},
+		{X86_REG_R11, i64},
+		{X86_REG_R12, i64},
+		{X86_REG_R13, i64},
+		{X86_REG_R14, i64},
+		{X86_REG_R15, i64},
 
-			{X86_REG_ST0, fp80},
-			{X86_REG_ST1, fp80},
-			{X86_REG_ST2, fp80},
-			{X86_REG_ST3, fp80},
-			{X86_REG_ST4, fp80},
-			{X86_REG_ST5, fp80},
-			{X86_REG_ST6, fp80},
-			{X86_REG_ST7, fp80},
+		{X86_REG_ST0, fp80},
+		{X86_REG_ST1, fp80},
+		{X86_REG_ST2, fp80},
+		{X86_REG_ST3, fp80},
+		{X86_REG_ST4, fp80},
+		{X86_REG_ST5, fp80},
+		{X86_REG_ST6, fp80},
+		{X86_REG_ST7, fp80},
 
-			{X86_REG_FP0, fp64},
-			{X86_REG_FP1, fp64},
-			{X86_REG_FP2, fp64},
-			{X86_REG_FP3, fp64},
-			{X86_REG_FP4, fp64},
-			{X86_REG_FP5, fp64},
-			{X86_REG_FP6, fp64},
-			{X86_REG_FP7, fp64},
+		{X86_REG_FP0, fp64},
+		{X86_REG_FP1, fp64},
+		{X86_REG_FP2, fp64},
+		{X86_REG_FP3, fp64},
+		{X86_REG_FP4, fp64},
+		{X86_REG_FP5, fp64},
+		{X86_REG_FP6, fp64},
+		{X86_REG_FP7, fp64},
 
-			{X86_REG_EFLAGS, defTy},
-			{X86_REG_DR0, defTy},
-			{X86_REG_DR1, defTy},
-			{X86_REG_DR2, defTy},
-			{X86_REG_DR3, defTy},
-			{X86_REG_DR4, defTy},
-			{X86_REG_DR5, defTy},
-			{X86_REG_DR6, defTy},
-			{X86_REG_DR7, defTy},
-			{X86_REG_DR8, defTy},
-			{X86_REG_DR9, defTy},
-			{X86_REG_DR10, defTy},
-			{X86_REG_DR11, defTy},
-			{X86_REG_DR12, defTy},
-			{X86_REG_DR13, defTy},
-			{X86_REG_DR14, defTy},
-			{X86_REG_DR15, defTy},
+		{X86_REG_EFLAGS, defTy},
+		{X86_REG_DR0, defTy},
+		{X86_REG_DR1, defTy},
+		{X86_REG_DR2, defTy},
+		{X86_REG_DR3, defTy},
+		{X86_REG_DR4, defTy},
+		{X86_REG_DR5, defTy},
+		{X86_REG_DR6, defTy},
+		{X86_REG_DR7, defTy},
+		{X86_REG_DR8, defTy},
+		{X86_REG_DR9, defTy},
+		{X86_REG_DR10, defTy},
+		{X86_REG_DR11, defTy},
+		{X86_REG_DR12, defTy},
+		{X86_REG_DR13, defTy},
+		{X86_REG_DR14, defTy},
+		{X86_REG_DR15, defTy},
 
-			{X86_REG_CR0, defTy},
-			{X86_REG_CR1, defTy},
-			{X86_REG_CR2, defTy},
-			{X86_REG_CR3, defTy},
-			{X86_REG_CR4, defTy},
-			{X86_REG_CR5, defTy},
-			{X86_REG_CR6, defTy},
-			{X86_REG_CR7, defTy},
-			{X86_REG_CR8, defTy},
-			{X86_REG_CR9, defTy},
-			{X86_REG_CR10, defTy},
-			{X86_REG_CR11, defTy},
-			{X86_REG_CR12, defTy},
-			{X86_REG_CR13, defTy},
-			{X86_REG_CR14, defTy},
-			{X86_REG_CR15, defTy},
+		{X86_REG_CR0, defTy},
+		{X86_REG_CR1, defTy},
+		{X86_REG_CR2, defTy},
+		{X86_REG_CR3, defTy},
+		{X86_REG_CR4, defTy},
+		{X86_REG_CR5, defTy},
+		{X86_REG_CR6, defTy},
+		{X86_REG_CR7, defTy},
+		{X86_REG_CR8, defTy},
+		{X86_REG_CR9, defTy},
+		{X86_REG_CR10, defTy},
+		{X86_REG_CR11, defTy},
+		{X86_REG_CR12, defTy},
+		{X86_REG_CR13, defTy},
+		{X86_REG_CR14, defTy},
+		{X86_REG_CR15, defTy},
 
-			{X86_REG_FPSW, defTy},
+		{X86_REG_FPSW, defTy},
 
-			// opmask registers (AVX-512)
-			{X86_REG_K0, i64},
-			{X86_REG_K1, i64},
-			{X86_REG_K2, i64},
-			{X86_REG_K3, i64},
-			{X86_REG_K4, i64},
-			{X86_REG_K5, i64},
-			{X86_REG_K6, i64},
-			{X86_REG_K7, i64},
+		// opmask registers (AVX-512)
+		{X86_REG_K0, i64},
+		{X86_REG_K1, i64},
+		{X86_REG_K2, i64},
+		{X86_REG_K3, i64},
+		{X86_REG_K4, i64},
+		{X86_REG_K5, i64},
+		{X86_REG_K6, i64},
+		{X86_REG_K7, i64},
 
-			// MMX
-			{X86_REG_MM0, i64},
-			{X86_REG_MM1, i64},
-			{X86_REG_MM2, i64},
-			{X86_REG_MM3, i64},
-			{X86_REG_MM4, i64},
-			{X86_REG_MM5, i64},
-			{X86_REG_MM6, i64},
-			{X86_REG_MM7, i64},
+		// MMX
+		{X86_REG_MM0, i64},
+		{X86_REG_MM1, i64},
+		{X86_REG_MM2, i64},
+		{X86_REG_MM3, i64},
+		{X86_REG_MM4, i64},
+		{X86_REG_MM5, i64},
+		{X86_REG_MM6, i64},
+		{X86_REG_MM7, i64},
 
-			// XMM
-			{X86_REG_XMM0, i128},
-			{X86_REG_XMM1, i128},
-			{X86_REG_XMM2, i128},
-			{X86_REG_XMM3, i128},
-			{X86_REG_XMM4, i128},
-			{X86_REG_XMM5, i128},
-			{X86_REG_XMM6, i128},
-			{X86_REG_XMM7, i128},
-			{X86_REG_XMM8, i128},
-			{X86_REG_XMM9, i128},
-			{X86_REG_XMM10, i128},
-			{X86_REG_XMM11, i128},
-			{X86_REG_XMM12, i128},
-			{X86_REG_XMM13, i128},
-			{X86_REG_XMM14, i128},
-			{X86_REG_XMM15, i128},
-			{X86_REG_XMM16, i128},
-			{X86_REG_XMM17, i128},
-			{X86_REG_XMM18, i128},
-			{X86_REG_XMM19, i128},
-			{X86_REG_XMM20, i128},
-			{X86_REG_XMM21, i128},
-			{X86_REG_XMM22, i128},
-			{X86_REG_XMM23, i128},
-			{X86_REG_XMM24, i128},
-			{X86_REG_XMM25, i128},
-			{X86_REG_XMM26, i128},
-			{X86_REG_XMM27, i128},
-			{X86_REG_XMM28, i128},
-			{X86_REG_XMM29, i128},
-			{X86_REG_XMM30, i128},
-			{X86_REG_XMM31, i128},
+		// XMM
+		{X86_REG_XMM0, i128},
+		{X86_REG_XMM1, i128},
+		{X86_REG_XMM2, i128},
+		{X86_REG_XMM3, i128},
+		{X86_REG_XMM4, i128},
+		{X86_REG_XMM5, i128},
+		{X86_REG_XMM6, i128},
+		{X86_REG_XMM7, i128},
+		{X86_REG_XMM8, i128},
+		{X86_REG_XMM9, i128},
+		{X86_REG_XMM10, i128},
+		{X86_REG_XMM11, i128},
+		{X86_REG_XMM12, i128},
+		{X86_REG_XMM13, i128},
+		{X86_REG_XMM14, i128},
+		{X86_REG_XMM15, i128},
+		{X86_REG_XMM16, i128},
+		{X86_REG_XMM17, i128},
+		{X86_REG_XMM18, i128},
+		{X86_REG_XMM19, i128},
+		{X86_REG_XMM20, i128},
+		{X86_REG_XMM21, i128},
+		{X86_REG_XMM22, i128},
+		{X86_REG_XMM23, i128},
+		{X86_REG_XMM24, i128},
+		{X86_REG_XMM25, i128},
+		{X86_REG_XMM26, i128},
+		{X86_REG_XMM27, i128},
+		{X86_REG_XMM28, i128},
+		{X86_REG_XMM29, i128},
+		{X86_REG_XMM30, i128},
+		{X86_REG_XMM31, i128},
 
-			// YMM
-			{X86_REG_YMM0, i256},
-			{X86_REG_YMM1, i256},
-			{X86_REG_YMM2, i256},
-			{X86_REG_YMM3, i256},
-			{X86_REG_YMM4, i256},
-			{X86_REG_YMM5, i256},
-			{X86_REG_YMM6, i256},
-			{X86_REG_YMM7, i256},
-			{X86_REG_YMM8, i256},
-			{X86_REG_YMM9, i256},
-			{X86_REG_YMM10, i256},
-			{X86_REG_YMM11, i256},
-			{X86_REG_YMM12, i256},
-			{X86_REG_YMM13, i256},
-			{X86_REG_YMM14, i256},
-			{X86_REG_YMM15, i256},
-			{X86_REG_YMM16, i256},
-			{X86_REG_YMM17, i256},
-			{X86_REG_YMM18, i256},
-			{X86_REG_YMM19, i256},
-			{X86_REG_YMM20, i256},
-			{X86_REG_YMM21, i256},
-			{X86_REG_YMM22, i256},
-			{X86_REG_YMM23, i256},
-			{X86_REG_YMM24, i256},
-			{X86_REG_YMM25, i256},
-			{X86_REG_YMM26, i256},
-			{X86_REG_YMM27, i256},
-			{X86_REG_YMM28, i256},
-			{X86_REG_YMM29, i256},
-			{X86_REG_YMM30, i256},
-			{X86_REG_YMM31, i256},
+		// YMM
+		{X86_REG_YMM0, i256},
+		{X86_REG_YMM1, i256},
+		{X86_REG_YMM2, i256},
+		{X86_REG_YMM3, i256},
+		{X86_REG_YMM4, i256},
+		{X86_REG_YMM5, i256},
+		{X86_REG_YMM6, i256},
+		{X86_REG_YMM7, i256},
+		{X86_REG_YMM8, i256},
+		{X86_REG_YMM9, i256},
+		{X86_REG_YMM10, i256},
+		{X86_REG_YMM11, i256},
+		{X86_REG_YMM12, i256},
+		{X86_REG_YMM13, i256},
+		{X86_REG_YMM14, i256},
+		{X86_REG_YMM15, i256},
+		{X86_REG_YMM16, i256},
+		{X86_REG_YMM17, i256},
+		{X86_REG_YMM18, i256},
+		{X86_REG_YMM19, i256},
+		{X86_REG_YMM20, i256},
+		{X86_REG_YMM21, i256},
+		{X86_REG_YMM22, i256},
+		{X86_REG_YMM23, i256},
+		{X86_REG_YMM24, i256},
+		{X86_REG_YMM25, i256},
+		{X86_REG_YMM26, i256},
+		{X86_REG_YMM27, i256},
+		{X86_REG_YMM28, i256},
+		{X86_REG_YMM29, i256},
+		{X86_REG_YMM30, i256},
+		{X86_REG_YMM31, i256},
 
-			// ZMM
-			{X86_REG_ZMM0, i512},
-			{X86_REG_ZMM1, i512},
-			{X86_REG_ZMM2, i512},
-			{X86_REG_ZMM3, i512},
-			{X86_REG_ZMM4, i512},
-			{X86_REG_ZMM5, i512},
-			{X86_REG_ZMM6, i512},
-			{X86_REG_ZMM7, i512},
-			{X86_REG_ZMM8, i512},
-			{X86_REG_ZMM9, i512},
-			{X86_REG_ZMM10, i512},
-			{X86_REG_ZMM11, i512},
-			{X86_REG_ZMM12, i512},
-			{X86_REG_ZMM13, i512},
-			{X86_REG_ZMM14, i512},
-			{X86_REG_ZMM15, i512},
-			{X86_REG_ZMM16, i512},
-			{X86_REG_ZMM17, i512},
-			{X86_REG_ZMM18, i512},
-			{X86_REG_ZMM19, i512},
-			{X86_REG_ZMM20, i512},
-			{X86_REG_ZMM21, i512},
-			{X86_REG_ZMM22, i512},
-			{X86_REG_ZMM23, i512},
-			{X86_REG_ZMM24, i512},
-			{X86_REG_ZMM25, i512},
-			{X86_REG_ZMM26, i512},
-			{X86_REG_ZMM27, i512},
-			{X86_REG_ZMM28, i512},
-			{X86_REG_ZMM29, i512},
-			{X86_REG_ZMM30, i512},
-			{X86_REG_ZMM31, i512},
+		// ZMM
+		{X86_REG_ZMM0, i512},
+		{X86_REG_ZMM1, i512},
+		{X86_REG_ZMM2, i512},
+		{X86_REG_ZMM3, i512},
+		{X86_REG_ZMM4, i512},
+		{X86_REG_ZMM5, i512},
+		{X86_REG_ZMM6, i512},
+		{X86_REG_ZMM7, i512},
+		{X86_REG_ZMM8, i512},
+		{X86_REG_ZMM9, i512},
+		{X86_REG_ZMM10, i512},
+		{X86_REG_ZMM11, i512},
+		{X86_REG_ZMM12, i512},
+		{X86_REG_ZMM13, i512},
+		{X86_REG_ZMM14, i512},
+		{X86_REG_ZMM15, i512},
+		{X86_REG_ZMM16, i512},
+		{X86_REG_ZMM17, i512},
+		{X86_REG_ZMM18, i512},
+		{X86_REG_ZMM19, i512},
+		{X86_REG_ZMM20, i512},
+		{X86_REG_ZMM21, i512},
+		{X86_REG_ZMM22, i512},
+		{X86_REG_ZMM23, i512},
+		{X86_REG_ZMM24, i512},
+		{X86_REG_ZMM25, i512},
+		{X86_REG_ZMM26, i512},
+		{X86_REG_ZMM27, i512},
+		{X86_REG_ZMM28, i512},
+		{X86_REG_ZMM29, i512},
+		{X86_REG_ZMM30, i512},
+		{X86_REG_ZMM31, i512},
 
-			// x86_reg_rflags
-			//
-			{X86_REG_CF, i1},
-			{X86_REG_PF, i1},
-			{X86_REG_AF, i1},
-			{X86_REG_ZF, i1},
-			{X86_REG_SF, i1},
-			{X86_REG_TF, i1},
-			{X86_REG_IF, i1},
-			{X86_REG_DF, i1},
-			{X86_REG_OF, i1},
-			{X86_REG_IOPL, i2},
-			{X86_REG_NT, i1},
-			{X86_REG_RF, i1},
-			{X86_REG_VM, i1},
-			{X86_REG_AC, i1},
-			{X86_REG_VIF, i1},
-			{X86_REG_VIP, i1},
-			{X86_REG_ID, i1},
+		// x86_reg_rflags
+		//
+		{X86_REG_CF, i1},
+		{X86_REG_PF, i1},
+		{X86_REG_AF, i1},
+		{X86_REG_ZF, i1},
+		{X86_REG_SF, i1},
+		{X86_REG_TF, i1},
+		{X86_REG_IF, i1},
+		{X86_REG_DF, i1},
+		{X86_REG_OF, i1},
+		{X86_REG_IOPL, i2},
+		{X86_REG_NT, i1},
+		{X86_REG_RF, i1},
+		{X86_REG_VM, i1},
+		{X86_REG_AC, i1},
+		{X86_REG_VIF, i1},
+		{X86_REG_VIP, i1},
+		{X86_REG_ID, i1},
 
-			// x87_reg_status
-			//
-			{X87_REG_IE, i1},
-			{X87_REG_DE, i1},
-			{X87_REG_ZE, i1},
-			{X87_REG_OE, i1},
-			{X87_REG_UE, i1},
-			{X87_REG_PE, i1},
-			{X87_REG_SF, i1},
-			{X87_REG_ES, i1},
-			{X87_REG_C0, i1},
-			{X87_REG_C1, i1},
-			{X87_REG_C2, i1},
-			{X87_REG_C3, i1},
-			{X87_REG_TOP, i3},
-			{X87_REG_B, i1},
+		// x87_reg_status
+		//
+		{X87_REG_IE, i1},
+		{X87_REG_DE, i1},
+		{X87_REG_ZE, i1},
+		{X87_REG_OE, i1},
+		{X87_REG_UE, i1},
+		{X87_REG_PE, i1},
+		{X87_REG_SF, i1},
+		{X87_REG_ES, i1},
+		{X87_REG_C0, i1},
+		{X87_REG_C1, i1},
+		{X87_REG_C2, i1},
+		{X87_REG_C3, i1},
+		{X87_REG_TOP, i3},
+		{X87_REG_B, i1},
 
-			// x87_reg_control
-			//
-			{X87_REG_IM, i1},
-			{X87_REG_DM, i1},
-			{X87_REG_ZM, i1},
-			{X87_REG_OM, i1},
-			{X87_REG_UM, i1},
-			{X87_REG_PM, i1},
-			{X87_REG_PC, i2},
-			{X87_REG_RC, i2},
-			{X87_REG_X, i1},
+		// x87_reg_control
+		//
+		{X87_REG_IM, i1},
+		{X87_REG_DM, i1},
+		{X87_REG_ZM, i1},
+		{X87_REG_OM, i1},
+		{X87_REG_UM, i1},
+		{X87_REG_PM, i1},
+		{X87_REG_PC, i2},
+		{X87_REG_RC, i2},
+		{X87_REG_X, i1},
 	};
 
 	_reg2type = std::move(r2t);
@@ -425,57 +423,48 @@ void Capstone2LlvmIrTranslatorX86_impl::initializeRegTypeMap()
 
 void Capstone2LlvmIrTranslatorX86_impl::initializePseudoCallInstructionIDs()
 {
-	_callInsnIds =
-	{
-			X86_INS_CALL,
-			X86_INS_LCALL,
+	_callInsnIds = {
+		X86_INS_CALL,
+		X86_INS_LCALL,
 	};
 
-	_returnInsnIds =
-	{
-			X86_INS_RET,
-			X86_INS_RETF,
-			X86_INS_RETFQ
+	_returnInsnIds = {X86_INS_RET, X86_INS_RETF, X86_INS_RETFQ};
+
+	_branchInsnIds = {
+		X86_INS_JMP,
+		X86_INS_LJMP,
 	};
 
-	_branchInsnIds =
-	{
-			X86_INS_JMP,
-			X86_INS_LJMP,
+	_condBranchInsnIds = {
+		X86_INS_JCXZ,
+		X86_INS_JECXZ,
+		X86_INS_JRCXZ,
+		//
+		X86_INS_LOOP,
+		X86_INS_LOOPE,
+		X86_INS_LOOPNE,
+		//
+		X86_INS_JAE,
+		X86_INS_JA,
+		X86_INS_JBE,
+		X86_INS_JB,
+		X86_INS_JE,
+		X86_INS_JGE,
+		X86_INS_JG,
+		X86_INS_JLE,
+		X86_INS_JL,
+		X86_INS_JNE,
+		X86_INS_JNO,
+		X86_INS_JNP,
+		X86_INS_JNS,
+		X86_INS_JO,
+		X86_INS_JP,
+		X86_INS_JS,
 	};
 
-	_condBranchInsnIds =
-	{
-			X86_INS_JCXZ,
-			X86_INS_JECXZ,
-			X86_INS_JRCXZ,
-			//
-			X86_INS_LOOP,
-			X86_INS_LOOPE,
-			X86_INS_LOOPNE,
-			//
-			X86_INS_JAE,
-			X86_INS_JA,
-			X86_INS_JBE,
-			X86_INS_JB,
-			X86_INS_JE,
-			X86_INS_JGE,
-			X86_INS_JG,
-			X86_INS_JLE,
-			X86_INS_JL,
-			X86_INS_JNE,
-			X86_INS_JNO,
-			X86_INS_JNP,
-			X86_INS_JNS,
-			X86_INS_JO,
-			X86_INS_JP,
-			X86_INS_JS,
-	};
-
-	_controlFlowInsnIds =
-	{
-			// Currently, all instructions can be categorized based on their
-			// IDs alone.
+	_controlFlowInsnIds = {
+		// Currently, all instructions can be categorized based on their
+		// IDs alone.
 	};
 }
 
@@ -486,10 +475,9 @@ void Capstone2LlvmIrTranslatorX86_impl::initializePseudoCallInstructionIDs()
 //
 
 void Capstone2LlvmIrTranslatorX86_impl::initializeRegistersParentMapToOther(
-		const std::vector<x86_reg>& rs,
-		x86_reg other)
+	const std::vector<x86_reg>& rs, x86_reg other)
 {
-	for (auto r : rs)
+	for (auto r: rs)
 	{
 		if (r >= _reg2parentMap.size())
 		{
@@ -503,35 +491,34 @@ void Capstone2LlvmIrTranslatorX86_impl::initializeRegistersParentMap()
 {
 	switch (_origBasicMode)
 	{
-		case CS_MODE_16: initializeRegistersParentMap16(); break;
-		case CS_MODE_32: initializeRegistersParentMap32(); break;
-		case CS_MODE_64: initializeRegistersParentMap64(); break;
-		default:
-		{
-			throw GenericError("Unhandled mode in "
-					"initializeRegistersParentMap().");
-			break;
-		}
+	case CS_MODE_16: initializeRegistersParentMap16(); break;
+	case CS_MODE_32: initializeRegistersParentMap32(); break;
+	case CS_MODE_64: initializeRegistersParentMap64(); break;
+	default: {
+		throw GenericError(
+			"Unhandled mode in "
+			"initializeRegistersParentMap().");
+		break;
+	}
 	}
 }
 
 void Capstone2LlvmIrTranslatorX86_impl::initializeRegistersParentMap16()
 {
 	// Last element in vector is its own parent.
-	std::vector<std::vector<x86_reg>> rss =
-	{
-			{X86_REG_AH, X86_REG_AL, X86_REG_AX},
-			{X86_REG_CH, X86_REG_CL, X86_REG_CX},
-			{X86_REG_DH, X86_REG_DL, X86_REG_DX},
-			{X86_REG_BH, X86_REG_BL, X86_REG_BX},
-			{X86_REG_SPL, X86_REG_SP},
-			{X86_REG_BPL, X86_REG_BP},
-			{X86_REG_SIL, X86_REG_SI},
-			{X86_REG_DIL, X86_REG_DI},
-			{X86_REG_IP},
+	std::vector<std::vector<x86_reg>> rss = {
+		{X86_REG_AH, X86_REG_AL, X86_REG_AX},
+		{X86_REG_CH, X86_REG_CL, X86_REG_CX},
+		{X86_REG_DH, X86_REG_DL, X86_REG_DX},
+		{X86_REG_BH, X86_REG_BL, X86_REG_BX},
+		{X86_REG_SPL, X86_REG_SP},
+		{X86_REG_BPL, X86_REG_BP},
+		{X86_REG_SIL, X86_REG_SI},
+		{X86_REG_DIL, X86_REG_DI},
+		{X86_REG_IP},
 	};
 
-	for (std::vector<x86_reg>& rs : rss)
+	for (std::vector<x86_reg>& rs: rss)
 	{
 		initializeRegistersParentMapToOther(rs, rs.back());
 	}
@@ -540,21 +527,20 @@ void Capstone2LlvmIrTranslatorX86_impl::initializeRegistersParentMap16()
 void Capstone2LlvmIrTranslatorX86_impl::initializeRegistersParentMap32()
 {
 	// Last element in vector is its own parent.
-	std::vector<std::vector<x86_reg>> rss =
-	{
-			{X86_REG_AH, X86_REG_AL, X86_REG_AX, X86_REG_EAX},
-			{X86_REG_CH, X86_REG_CL, X86_REG_CX, X86_REG_ECX},
-			{X86_REG_DH, X86_REG_DL, X86_REG_DX, X86_REG_EDX},
-			{X86_REG_BH, X86_REG_BL, X86_REG_BX, X86_REG_EBX},
-			{X86_REG_SPL, X86_REG_SP, X86_REG_ESP},
-			{X86_REG_BPL, X86_REG_BP, X86_REG_EBP},
-			{X86_REG_SIL, X86_REG_SI, X86_REG_ESI},
-			{X86_REG_DIL, X86_REG_DI, X86_REG_EDI},
-			{X86_REG_IP, X86_REG_EIP},
-			{X86_REG_EIZ},
+	std::vector<std::vector<x86_reg>> rss = {
+		{X86_REG_AH, X86_REG_AL, X86_REG_AX, X86_REG_EAX},
+		{X86_REG_CH, X86_REG_CL, X86_REG_CX, X86_REG_ECX},
+		{X86_REG_DH, X86_REG_DL, X86_REG_DX, X86_REG_EDX},
+		{X86_REG_BH, X86_REG_BL, X86_REG_BX, X86_REG_EBX},
+		{X86_REG_SPL, X86_REG_SP, X86_REG_ESP},
+		{X86_REG_BPL, X86_REG_BP, X86_REG_EBP},
+		{X86_REG_SIL, X86_REG_SI, X86_REG_ESI},
+		{X86_REG_DIL, X86_REG_DI, X86_REG_EDI},
+		{X86_REG_IP, X86_REG_EIP},
+		{X86_REG_EIZ},
 	};
 
-	for (std::vector<x86_reg>& rs : rss)
+	for (std::vector<x86_reg>& rs: rss)
 	{
 		initializeRegistersParentMapToOther(rs, rs.back());
 	}
@@ -563,29 +549,27 @@ void Capstone2LlvmIrTranslatorX86_impl::initializeRegistersParentMap32()
 void Capstone2LlvmIrTranslatorX86_impl::initializeRegistersParentMap64()
 {
 	// Last element in vector is its own parent.
-	std::vector<std::vector<x86_reg>> rss =
-	{
-			{X86_REG_AH, X86_REG_AL, X86_REG_AX, X86_REG_EAX, X86_REG_RAX},
-			{X86_REG_CH, X86_REG_CL, X86_REG_CX, X86_REG_ECX, X86_REG_RCX},
-			{X86_REG_DH, X86_REG_DL, X86_REG_DX, X86_REG_EDX, X86_REG_RDX},
-			{X86_REG_BH, X86_REG_BL, X86_REG_BX, X86_REG_EBX, X86_REG_RBX},
-			{X86_REG_SPL, X86_REG_SP, X86_REG_ESP, X86_REG_RSP},
-			{X86_REG_BPL, X86_REG_BP, X86_REG_EBP, X86_REG_RBP},
-			{X86_REG_SIL, X86_REG_SI, X86_REG_ESI, X86_REG_RSI},
-			{X86_REG_DIL, X86_REG_DI, X86_REG_EDI, X86_REG_RDI},
-			{X86_REG_IP, X86_REG_EIP, X86_REG_RIP},
-			{X86_REG_EIZ, X86_REG_RIZ},
-			{X86_REG_R8B, X86_REG_R8W, X86_REG_R8D, X86_REG_R8},
-			{X86_REG_R9B, X86_REG_R9W, X86_REG_R9D, X86_REG_R9},
-			{X86_REG_R10B, X86_REG_R10W, X86_REG_R10D, X86_REG_R10},
-			{X86_REG_R11B, X86_REG_R11W, X86_REG_R11D, X86_REG_R11},
-			{X86_REG_R12B, X86_REG_R12W, X86_REG_R12D, X86_REG_R12},
-			{X86_REG_R13B, X86_REG_R13W, X86_REG_R13D, X86_REG_R13},
-			{X86_REG_R14B, X86_REG_R14W, X86_REG_R14D, X86_REG_R14},
-			{X86_REG_R15B, X86_REG_R15W, X86_REG_R15D, X86_REG_R15}
-	};
+	std::vector<std::vector<x86_reg>> rss = {
+		{X86_REG_AH, X86_REG_AL, X86_REG_AX, X86_REG_EAX, X86_REG_RAX},
+		{X86_REG_CH, X86_REG_CL, X86_REG_CX, X86_REG_ECX, X86_REG_RCX},
+		{X86_REG_DH, X86_REG_DL, X86_REG_DX, X86_REG_EDX, X86_REG_RDX},
+		{X86_REG_BH, X86_REG_BL, X86_REG_BX, X86_REG_EBX, X86_REG_RBX},
+		{X86_REG_SPL, X86_REG_SP, X86_REG_ESP, X86_REG_RSP},
+		{X86_REG_BPL, X86_REG_BP, X86_REG_EBP, X86_REG_RBP},
+		{X86_REG_SIL, X86_REG_SI, X86_REG_ESI, X86_REG_RSI},
+		{X86_REG_DIL, X86_REG_DI, X86_REG_EDI, X86_REG_RDI},
+		{X86_REG_IP, X86_REG_EIP, X86_REG_RIP},
+		{X86_REG_EIZ, X86_REG_RIZ},
+		{X86_REG_R8B, X86_REG_R8W, X86_REG_R8D, X86_REG_R8},
+		{X86_REG_R9B, X86_REG_R9W, X86_REG_R9D, X86_REG_R9},
+		{X86_REG_R10B, X86_REG_R10W, X86_REG_R10D, X86_REG_R10},
+		{X86_REG_R11B, X86_REG_R11W, X86_REG_R11D, X86_REG_R11},
+		{X86_REG_R12B, X86_REG_R12W, X86_REG_R12D, X86_REG_R12},
+		{X86_REG_R13B, X86_REG_R13W, X86_REG_R13D, X86_REG_R13},
+		{X86_REG_R14B, X86_REG_R14W, X86_REG_R14D, X86_REG_R14},
+		{X86_REG_R15B, X86_REG_R15W, X86_REG_R15D, X86_REG_R15}};
 
-	for (std::vector<x86_reg>& rs : rss)
+	for (std::vector<x86_reg>& rs: rss)
 	{
 		initializeRegistersParentMapToOther(rs, rs.back());
 	}
@@ -597,14 +581,8 @@ void Capstone2LlvmIrTranslatorX86_impl::initializeRegistersParentMap64()
 //==============================================================================
 //
 
-std::map<
-	std::size_t,
-	void (Capstone2LlvmIrTranslatorX86_impl::*)(
-			cs_insn* i,
-			cs_x86*,
-			llvm::IRBuilder<>&)>
-Capstone2LlvmIrTranslatorX86_impl::_i2fm =
-{
+std::map<std::size_t, void (Capstone2LlvmIrTranslatorX86_impl::*)(cs_insn* i, cs_x86*, llvm::IRBuilder<>&)>
+	Capstone2LlvmIrTranslatorX86_impl::_i2fm = {
 		{X86_INS_INVALID, nullptr},
 
 		{X86_INS_AAA, &Capstone2LlvmIrTranslatorX86_impl::translateAaa},

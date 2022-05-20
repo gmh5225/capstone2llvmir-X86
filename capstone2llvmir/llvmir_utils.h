@@ -43,9 +43,7 @@ llvm::Type* getFloatTypeFromByteSize(llvm::Module* module, unsigned sz);
  * @return IR builder whose insert point is set to if-then body BB's
  *         terminator instruction. Use this builder to fill the body.
  */
-llvm::IRBuilder<> generateIfThen(
-		llvm::Value* cond,
-		llvm::IRBuilder<>& irb);
+llvm::IRBuilder<> generateIfThen(llvm::Value* cond, llvm::IRBuilder<>& irb);
 
 /**
  * Same as @c generateIfThen() but if @p cond is @c true, body is skipped:
@@ -56,9 +54,7 @@ llvm::IRBuilder<> generateIfThen(
 	// after
  * @endcode
  */
-llvm::IRBuilder<> generateIfNotThen(
-		llvm::Value* cond,
-		llvm::IRBuilder<>& irb);
+llvm::IRBuilder<> generateIfNotThen(llvm::Value* cond, llvm::IRBuilder<>& irb);
 
 /**
  * Generate if-then-else statement at the current insert point of @p irb builder.
@@ -78,9 +74,7 @@ llvm::IRBuilder<> generateIfNotThen(
  *         bodyIf (first) and bodyElse (second) terminator instructions.
  *         Use these builders to fill the bodies.
  */
-std::pair<llvm::IRBuilder<>, llvm::IRBuilder<>> generateIfThenElse(
-		llvm::Value* cond,
-		llvm::IRBuilder<>& irb);
+std::pair<llvm::IRBuilder<>, llvm::IRBuilder<>> generateIfThenElse(llvm::Value* cond, llvm::IRBuilder<>& irb);
 
 /**
  * Generate while statement at the current insert point of @p irb builder.
@@ -102,9 +96,7 @@ std::pair<llvm::IRBuilder<>, llvm::IRBuilder<>> generateIfThenElse(
  *         while body BB's terminator instructions.
  *         Use these builders to fill while's condition and body.
  */
-std::pair<llvm::IRBuilder<>, llvm::IRBuilder<>> generateWhile(
-		llvm::BranchInst*& branch,
-		llvm::IRBuilder<>& irb);
+std::pair<llvm::IRBuilder<>, llvm::IRBuilder<>> generateWhile(llvm::BranchInst*& branch, llvm::IRBuilder<>& irb);
 
 } // namespace capstone2llvmir
 } // namespace retdec

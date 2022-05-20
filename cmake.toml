@@ -2,12 +2,10 @@
 [project]
 name = "capstone2llvmir-X86"
 
-[find-package.LLVM]
-required = true
-config = true
-
 [subdir.utils]
 [subdir.common]
+[subdir.capstone-retdec]
+[subdir.llvm-retdec]
 
 [target.capstone2llvmir-X86]
 type = "static"
@@ -29,12 +27,8 @@ include-directories = [
 "${CMAKE_SOURCE_DIR}/include/retdec",
 "${CMAKE_SOURCE_DIR}/include/whereami",
 "capstone-retdec/include",
-"${LLVM_INCLUDE_DIRS}"
+"llvm-retdec/include"
 ]
-
-link-directories = ["${LLVM_LIBRARY_DIRS}"]
-
-add-definitions = ["${LLVM_DEFINITIONS}"]
 
 link-libraries = [
 "capstone-static",

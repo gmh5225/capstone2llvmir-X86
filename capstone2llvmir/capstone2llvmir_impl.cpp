@@ -14,16 +14,9 @@ namespace capstone2llvmir {
 
 template <typename CInsn, typename CInsnOp>
 Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::Capstone2LlvmIrTranslator_impl(
-		cs_arch a,
-		cs_mode basic,
-		cs_mode extra,
-		llvm::Module* m)
-		:
-		_arch(a),
-		_basicMode(basic),
-		_extraMode(extra),
-		_origBasicMode(basic),
-		_module(m)
+	cs_arch a, cs_mode basic, cs_mode extra, llvm::Module* m):
+	_arch(a),
+	_basicMode(basic), _extraMode(extra), _origBasicMode(basic), _module(m)
 {
 	// Do not call anything here, especially virtual methods.
 }
@@ -87,10 +80,7 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::modifyBasicMode(cs_mode m)
 {
 	if (!isAllowedBasicMode(m))
 	{
-		throw ModeSettingError(
-				_arch,
-				m,
-				ModeSettingError::eType::BASIC_MODE);
+		throw ModeSettingError(_arch, m, ModeSettingError::eType::BASIC_MODE);
 	}
 
 	if (cs_option(_handle, CS_OPT_MODE, m + _extraMode) != CS_ERR_OK)
@@ -106,10 +96,7 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::modifyExtraMode(cs_mode m)
 {
 	if (!isAllowedExtraMode(m))
 	{
-		throw ModeSettingError(
-				_arch,
-				m,
-				ModeSettingError::eType::EXTRA_MODE);
+		throw ModeSettingError(_arch, m, ModeSettingError::eType::EXTRA_MODE);
 	}
 
 	if (cs_option(_handle, CS_OPT_MODE, m + _basicMode) != CS_ERR_OK)
@@ -163,12 +150,12 @@ uint32_t Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getArchBitSize()
 template <typename CInsn, typename CInsnOp>
 typename Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::TranslationResult
 Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translate(
-		const uint8_t* bytes,
-		std::size_t size,
-		retdec::common::Address a,
-		llvm::IRBuilder<>& irb,
-		std::size_t count,
-		bool stopOnBranch)
+	const uint8_t* bytes,
+	std::size_t size,
+	retdec::common::Address a,
+	llvm::IRBuilder<>& irb,
+	std::size_t count,
+	bool stopOnBranch)
 {
 	TranslationResult res;
 
@@ -231,10 +218,7 @@ Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translate(
 template <typename CInsn, typename CInsnOp>
 typename Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::TranslationResultOne
 Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translateOne(
-		const uint8_t*& bytes,
-		std::size_t& size,
-		retdec::common::Address& a,
-		llvm::IRBuilder<>& irb)
+	const uint8_t*& bytes, std::size_t& size, retdec::common::Address& a, llvm::IRBuilder<>& irb)
 {
 	TranslationResultOne res;
 
@@ -348,8 +332,7 @@ std::string Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getRegisterName(uint
 		}
 		else
 		{
-			throw GenericError(
-					"Missing name for register number: " + std::to_string(r));
+			throw GenericError("Missing name for register number: " + std::to_string(r));
 		}
 	}
 	else
@@ -388,66 +371,54 @@ uint32_t Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getRegisterBitSize(uint
 	}
 	else
 	{
-		throw GenericError(
-				"Unhandled type of register number: " + std::to_string(r));
+		throw GenericError("Unhandled type of register number: " + std::to_string(r));
 	}
 }
 
 template <typename CInsn, typename CInsnOp>
-uint32_t Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getRegisterByteSize(
-		uint32_t r) const
+uint32_t Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getRegisterByteSize(uint32_t r) const
 {
 	return getRegisterBitSize(r) / 8;
 }
 
 template <typename CInsn, typename CInsnOp>
-llvm::Type* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getRegisterType(
-		uint32_t r) const
+llvm::Type* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getRegisterType(uint32_t r) const
 {
 	auto fIt = _reg2type.find(r);
 	if (fIt == _reg2type.end())
 	{
-		throw GenericError(
-				"Missing type for register number: " + std::to_string(r));
+		throw GenericError("Missing type for register number: " + std::to_string(r));
 	}
 	return fIt->second;
 }
 
 template <typename CInsn, typename CInsnOp>
-bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isControlFlowInstruction(
-		cs_insn& i) const
+bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isControlFlowInstruction(cs_insn& i) const
 {
-	return _controlFlowInsnIds.count(i.id)
-			|| isCallInstruction(i)
-			|| isReturnInstruction(i)
-			|| isBranchInstruction(i)
-			|| isCondBranchInstruction(i);
+	return _controlFlowInsnIds.count(i.id) || isCallInstruction(i) || isReturnInstruction(i) || isBranchInstruction(i)
+		|| isCondBranchInstruction(i);
 }
 
 template <typename CInsn, typename CInsnOp>
-bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isCallInstruction(
-		cs_insn& i) const
+bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isCallInstruction(cs_insn& i) const
 {
 	return _callInsnIds.count(i.id);
 }
 
 template <typename CInsn, typename CInsnOp>
-bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isReturnInstruction(
-		cs_insn& i) const
+bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isReturnInstruction(cs_insn& i) const
 {
 	return _returnInsnIds.count(i.id);
 }
 
 template <typename CInsn, typename CInsnOp>
-bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isBranchInstruction(
-		cs_insn& i) const
+bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isBranchInstruction(cs_insn& i) const
 {
 	return _branchInsnIds.count(i.id);
 }
 
 template <typename CInsn, typename CInsnOp>
-bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isCondBranchInstruction(
-		cs_insn& i) const
+bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isCondBranchInstruction(cs_insn& i) const
 {
 	return _condBranchInsnIds.count(i.id);
 }
@@ -460,8 +431,7 @@ bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isCondBranchInstruction(
 
 template <typename CInsn, typename CInsnOp>
 llvm::BranchInst*
-Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getCondBranchForInsnInIfThen(
-		llvm::Instruction* i) const
+Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getCondBranchForInsnInIfThen(llvm::Instruction* i) const
 {
 	// Asm to LLVM mapping instruction is not in BB where call is.
 	auto* prev = i->getPrevNode();
@@ -477,10 +447,7 @@ Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getCondBranchForInsnInIfThen(
 	auto* prevBb = i->getParent()->getPrevNode();
 	auto* term = prevBb ? prevBb->getTerminator() : nullptr;
 	auto* br = llvm::dyn_cast_or_null<llvm::BranchInst>(term);
-	if (prevBb == nullptr
-			|| br == nullptr
-			|| !br->isConditional()
-			|| br->getSuccessor(0) != i->getParent())
+	if (prevBb == nullptr || br == nullptr || !br->isConditional() || br->getSuccessor(0) != i->getParent())
 	{
 		return nullptr;
 	}
@@ -495,15 +462,13 @@ llvm::Module* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getModule() const
 }
 
 template <typename CInsn, typename CInsnOp>
-bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isSpecialAsm2LlvmMapGlobal(
-		llvm::Value* v) const
+bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isSpecialAsm2LlvmMapGlobal(llvm::Value* v) const
 {
 	return _asm2llvmGv == v;
 }
 
 template <typename CInsn, typename CInsnOp>
-llvm::StoreInst* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isSpecialAsm2LlvmInstr(
-		llvm::Value* v) const
+llvm::StoreInst* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isSpecialAsm2LlvmInstr(llvm::Value* v) const
 {
 	if (auto* s = llvm::dyn_cast<llvm::StoreInst>(v))
 	{
@@ -552,14 +517,14 @@ bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isReturnFunction(llvm::Func
 }
 
 template <typename CInsn, typename CInsnOp>
-bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isReturnFunctionCall(
-		llvm::CallInst* c) const
+bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isReturnFunctionCall(llvm::CallInst* c) const
 {
 	return c ? isReturnFunction(c->getCalledFunction()) : false;
 }
 
 template <typename CInsn, typename CInsnOp>
-llvm::BranchInst* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isInConditionReturnFunctionCall(llvm::CallInst* c) const
+llvm::BranchInst*
+Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isInConditionReturnFunctionCall(llvm::CallInst* c) const
 {
 	return isReturnFunctionCall(c) ? getCondBranchForInsnInIfThen(c) : nullptr;
 }
@@ -577,14 +542,14 @@ bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isBranchFunction(llvm::Func
 }
 
 template <typename CInsn, typename CInsnOp>
-bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isBranchFunctionCall(
-		llvm::CallInst* c) const
+bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isBranchFunctionCall(llvm::CallInst* c) const
 {
 	return c ? isBranchFunction(c->getCalledFunction()) : false;
 }
 
 template <typename CInsn, typename CInsnOp>
-llvm::BranchInst* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isInConditionBranchFunctionCall(llvm::CallInst* c) const
+llvm::BranchInst*
+Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isInConditionBranchFunctionCall(llvm::CallInst* c) const
 {
 	return isBranchFunctionCall(c) ? getCondBranchForInsnInIfThen(c) : nullptr;
 }
@@ -596,22 +561,20 @@ llvm::Function* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getBranchFunctio
 }
 
 template <typename CInsn, typename CInsnOp>
-bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isCondBranchFunction(
-		llvm::Function* f) const
+bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isCondBranchFunction(llvm::Function* f) const
 {
 	return _condBranchFunction == f;
 }
 
 template <typename CInsn, typename CInsnOp>
-bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isCondBranchFunctionCall(
-		llvm::CallInst* c) const
+bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isCondBranchFunctionCall(llvm::CallInst* c) const
 {
 	return c ? isCondBranchFunction(c->getCalledFunction()) : false;
 }
 
 template <typename CInsn, typename CInsnOp>
-llvm::BranchInst* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isInConditionCondBranchFunctionCall(
-		llvm::CallInst* c) const
+llvm::BranchInst*
+Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isInConditionCondBranchFunctionCall(llvm::CallInst* c) const
 {
 	return isCondBranchFunctionCall(c) ? getCondBranchForInsnInIfThen(c) : nullptr;
 }
@@ -623,51 +586,39 @@ llvm::Function* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getCondBranchFun
 }
 
 template <typename CInsn, typename CInsnOp>
-bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isAnyPseudoFunction(
-		llvm::Function* f) const
+bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isAnyPseudoFunction(llvm::Function* f) const
 {
-	return isCallFunction(f)
-			|| isReturnFunction(f)
-			|| isBranchFunction(f)
-			|| isCondBranchFunction(f);
+	return isCallFunction(f) || isReturnFunction(f) || isBranchFunction(f) || isCondBranchFunction(f);
 }
 
 template <typename CInsn, typename CInsnOp>
-bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isAnyPseudoFunctionCall(
-		llvm::CallInst* c) const
+bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isAnyPseudoFunctionCall(llvm::CallInst* c) const
 {
-	return isCallFunctionCall(c)
-			|| isReturnFunctionCall(c)
-			|| isBranchFunctionCall(c)
-			|| isCondBranchFunctionCall(c);
+	return isCallFunctionCall(c) || isReturnFunctionCall(c) || isBranchFunctionCall(c) || isCondBranchFunctionCall(c);
 }
 
 template <typename CInsn, typename CInsnOp>
-llvm::GlobalVariable* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isRegister(
-		llvm::Value* v) const
+llvm::GlobalVariable* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isRegister(llvm::Value* v) const
 {
 	auto it = _llvm2CapstoneRegs.find(llvm::dyn_cast_or_null<llvm::GlobalVariable>(v));
 	return it != _llvm2CapstoneRegs.end() ? it->first : nullptr;
 }
 
 template <typename CInsn, typename CInsnOp>
-uint32_t Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getCapstoneRegister(
-		llvm::GlobalVariable* gv) const
+uint32_t Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getCapstoneRegister(llvm::GlobalVariable* gv) const
 {
 	auto it = _llvm2CapstoneRegs.find(gv);
 	return it != _llvm2CapstoneRegs.end() ? it->second : 0;
 }
 
 template <typename CInsn, typename CInsnOp>
-bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isPseudoAsmFunction(
-		llvm::Function* f) const
+bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isPseudoAsmFunction(llvm::Function* f) const
 {
 	return _asmFunctions.count(f);
 }
 
 template <typename CInsn, typename CInsnOp>
-bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isPseudoAsmFunctionCall(
-		llvm::CallInst* c) const
+bool Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::isPseudoAsmFunctionCall(llvm::CallInst* c) const
 {
 	return c ? isPseudoAsmFunction(c->getCalledFunction()) : false;
 }
@@ -689,17 +640,11 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::initialize()
 {
 	if (!isAllowedBasicMode(_basicMode))
 	{
-		throw ModeSettingError(
-				_arch,
-				_basicMode,
-				ModeSettingError::eType::BASIC_MODE);
+		throw ModeSettingError(_arch, _basicMode, ModeSettingError::eType::BASIC_MODE);
 	}
 	if (!isAllowedExtraMode(_extraMode))
 	{
-		throw ModeSettingError(
-				_arch,
-				_extraMode,
-				ModeSettingError::eType::EXTRA_MODE);
+		throw ModeSettingError(_arch, _extraMode, ModeSettingError::eType::EXTRA_MODE);
 	}
 
 	openHandle(); // Sets both _basicMode and _extraMode.
@@ -770,24 +715,22 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateSpecialAsm2LlvmMapG
 	llvm::GlobalValue::LinkageTypes lt = llvm::GlobalValue::InternalLinkage;
 	llvm::Constant* initializer = nullptr;
 	auto* t = llvm::IntegerType::getInt64Ty(_module->getContext());
-	if (initializer == nullptr
-			&& lt != llvm::GlobalValue::LinkageTypes::ExternalLinkage)
+	if (initializer == nullptr && lt != llvm::GlobalValue::LinkageTypes::ExternalLinkage)
 	{
 		initializer = llvm::ConstantInt::get(t, 0);
 	}
 
 	_asm2llvmGv = new llvm::GlobalVariable(
-			*_module,
-			t,
-			false, // isConstant
-			lt,
-			initializer);
+		*_module,
+		t,
+		false, // isConstant
+		lt,
+		initializer);
 }
 
 template <typename CInsn, typename CInsnOp>
-llvm::StoreInst* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateSpecialAsm2LlvmInstr(
-		llvm::IRBuilder<>& irb,
-		cs_insn* i)
+llvm::StoreInst*
+Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateSpecialAsm2LlvmInstr(llvm::IRBuilder<>& irb, cs_insn* i)
 {
 	retdec::common::Address a = i->address;
 	auto* gv = getAsm2LlvmMapGlobalVariable();
@@ -800,20 +743,15 @@ template <typename CInsn, typename CInsnOp>
 void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateCallFunction()
 {
 	auto* ft = llvm::FunctionType::get(
-			llvm::Type::getVoidTy(_module->getContext()),
-			{llvm::Type::getIntNTy(_module->getContext(), getArchBitSize())},
-			false);
-	_callFunction = llvm::Function::Create(
-			ft,
-			llvm::GlobalValue::LinkageTypes::ExternalLinkage,
-			"",
-			_module);
+		llvm::Type::getVoidTy(_module->getContext()),
+		{llvm::Type::getIntNTy(_module->getContext(), getArchBitSize())},
+		false);
+	_callFunction = llvm::Function::Create(ft, llvm::GlobalValue::LinkageTypes::ExternalLinkage, "", _module);
 }
 
 template <typename CInsn, typename CInsnOp>
-llvm::CallInst* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateCallFunctionCall(
-		llvm::IRBuilder<>& irb,
-		llvm::Value* t)
+llvm::CallInst*
+Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateCallFunctionCall(llvm::IRBuilder<>& irb, llvm::Value* t)
 {
 	auto* a1t = _callFunction->arg_begin()->getType();
 	t = irb.CreateSExtOrTrunc(t, a1t);
@@ -823,9 +761,7 @@ llvm::CallInst* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateCallFunc
 
 template <typename CInsn, typename CInsnOp>
 llvm::CallInst* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateCondCallFunctionCall(
-		llvm::IRBuilder<>& irb,
-		llvm::Value* cond,
-		llvm::Value* t)
+	llvm::IRBuilder<>& irb, llvm::Value* cond, llvm::Value* t)
 {
 	auto bodyIrb = generateIfThen(cond, irb);
 
@@ -840,20 +776,15 @@ template <typename CInsn, typename CInsnOp>
 void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateReturnFunction()
 {
 	auto* ft = llvm::FunctionType::get(
-			llvm::Type::getVoidTy(_module->getContext()),
-			{llvm::Type::getIntNTy(_module->getContext(), getArchBitSize())},
-			false);
-	_returnFunction = llvm::Function::Create(
-			ft,
-			llvm::GlobalValue::LinkageTypes::ExternalLinkage,
-			"",
-			_module);
+		llvm::Type::getVoidTy(_module->getContext()),
+		{llvm::Type::getIntNTy(_module->getContext(), getArchBitSize())},
+		false);
+	_returnFunction = llvm::Function::Create(ft, llvm::GlobalValue::LinkageTypes::ExternalLinkage, "", _module);
 }
 
 template <typename CInsn, typename CInsnOp>
-llvm::CallInst* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateReturnFunctionCall(
-		llvm::IRBuilder<>& irb,
-		llvm::Value* t)
+llvm::CallInst*
+Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateReturnFunctionCall(llvm::IRBuilder<>& irb, llvm::Value* t)
 {
 	auto* a1t = _returnFunction->arg_begin()->getType();
 	t = irb.CreateSExtOrTrunc(t, a1t);
@@ -863,9 +794,7 @@ llvm::CallInst* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateReturnFu
 
 template <typename CInsn, typename CInsnOp>
 llvm::CallInst* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateCondReturnFunctionCall(
-		llvm::IRBuilder<>& irb,
-		llvm::Value* cond,
-		llvm::Value* t)
+	llvm::IRBuilder<>& irb, llvm::Value* cond, llvm::Value* t)
 {
 	auto bodyIrb = generateIfThen(cond, irb);
 
@@ -880,20 +809,15 @@ template <typename CInsn, typename CInsnOp>
 void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateBranchFunction()
 {
 	auto* ft = llvm::FunctionType::get(
-			llvm::Type::getVoidTy(_module->getContext()),
-			{llvm::Type::getIntNTy(_module->getContext(), getArchBitSize())},
-			false);
-	_branchFunction = llvm::Function::Create(
-			ft,
-			llvm::GlobalValue::LinkageTypes::ExternalLinkage,
-			"",
-			_module);
+		llvm::Type::getVoidTy(_module->getContext()),
+		{llvm::Type::getIntNTy(_module->getContext(), getArchBitSize())},
+		false);
+	_branchFunction = llvm::Function::Create(ft, llvm::GlobalValue::LinkageTypes::ExternalLinkage, "", _module);
 }
 
 template <typename CInsn, typename CInsnOp>
-llvm::CallInst* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateBranchFunctionCall(
-		llvm::IRBuilder<>& irb,
-		llvm::Value* t)
+llvm::CallInst*
+Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateBranchFunctionCall(llvm::IRBuilder<>& irb, llvm::Value* t)
 {
 	auto* a1t = _branchFunction->arg_begin()->getType();
 	t = irb.CreateSExtOrTrunc(t, a1t);
@@ -905,24 +829,14 @@ template <typename CInsn, typename CInsnOp>
 void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateCondBranchFunction()
 {
 	std::vector<llvm::Type*> params = {
-			llvm::Type::getInt1Ty(_module->getContext()),
-			llvm::Type::getIntNTy(_module->getContext(), getArchBitSize())};
-	auto* ft = llvm::FunctionType::get(
-			llvm::Type::getVoidTy(_module->getContext()),
-			params,
-			false);
-	_condBranchFunction = llvm::Function::Create(
-			ft,
-			llvm::GlobalValue::LinkageTypes::ExternalLinkage,
-			"",
-			_module);
+		llvm::Type::getInt1Ty(_module->getContext()), llvm::Type::getIntNTy(_module->getContext(), getArchBitSize())};
+	auto* ft = llvm::FunctionType::get(llvm::Type::getVoidTy(_module->getContext()), params, false);
+	_condBranchFunction = llvm::Function::Create(ft, llvm::GlobalValue::LinkageTypes::ExternalLinkage, "", _module);
 }
 
 template <typename CInsn, typename CInsnOp>
 llvm::CallInst* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateCondBranchFunctionCall(
-		llvm::IRBuilder<>& irb,
-		llvm::Value* cond,
-		llvm::Value* t)
+	llvm::IRBuilder<>& irb, llvm::Value* cond, llvm::Value* t)
 {
 	auto aIt = _condBranchFunction->arg_begin();
 	++aIt;
@@ -934,13 +848,10 @@ llvm::CallInst* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateCondBran
 
 template <typename CInsn, typename CInsnOp>
 llvm::GlobalVariable* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::createRegister(
-		uint32_t r,
-		llvm::GlobalValue::LinkageTypes lt,
-		llvm::Constant* initializer)
+	uint32_t r, llvm::GlobalValue::LinkageTypes lt, llvm::Constant* initializer)
 {
 	auto* rt = getRegisterType(r);
-	if (initializer == nullptr
-			&& lt != llvm::GlobalValue::LinkageTypes::ExternalLinkage)
+	if (initializer == nullptr && lt != llvm::GlobalValue::LinkageTypes::ExternalLinkage)
 	{
 		if (auto* it = llvm::dyn_cast<llvm::IntegerType>(rt))
 		{
@@ -957,12 +868,12 @@ llvm::GlobalVariable* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::createRegi
 	}
 
 	auto* gv = new llvm::GlobalVariable(
-			*_module,
-			rt,
-			false, // isConstant
-			lt,
-			initializer,
-			getRegisterName(r));
+		*_module,
+		rt,
+		false, // isConstant
+		lt,
+		initializer,
+		getRegisterName(r));
 
 	if (gv == nullptr)
 	{
@@ -983,18 +894,11 @@ llvm::GlobalVariable* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::createRegi
 
 template <typename CInsn, typename CInsnOp>
 llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOp(
-		CInsn* ci,
-		llvm::IRBuilder<>& irb,
-		std::size_t idx,
-		llvm::Type* loadType,
-		llvm::Type* dstType,
-		eOpConv ct)
+	CInsn* ci, llvm::IRBuilder<>& irb, std::size_t idx, llvm::Type* loadType, llvm::Type* dstType, eOpConv ct)
 {
 	if (ci->op_count <= idx)
 	{
-		throw GenericError(
-				"Idx out of bounds: "+std::to_string(idx)
-				+"/"+std::to_string(ci->op_count));
+		throw GenericError("Idx out of bounds: " + std::to_string(idx) + "/" + std::to_string(ci->op_count));
 	}
 
 	auto* op = loadOp(ci->operands[idx], irb, loadType);
@@ -1013,22 +917,19 @@ llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOp(
 
 template <typename CInsn, typename CInsnOp>
 std::vector<llvm::Value*> Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::_loadOps(
-		CInsn* ci,
-		llvm::IRBuilder<>& irb,
-		std::size_t opCnt,
-		bool strict,
-		llvm::Type* loadType,
-		llvm::Type* dstType,
-		eOpConv ct)
+	CInsn* ci,
+	llvm::IRBuilder<>& irb,
+	std::size_t opCnt,
+	bool strict,
+	llvm::Type* loadType,
+	llvm::Type* dstType,
+	eOpConv ct)
 {
 	if ((strict && (ci->op_count != opCnt)) || (ci->op_count < opCnt))
 	{
 		throw GenericError(
-				"Trying to load "
-				+std::to_string(opCnt)
-				+" operands from instruction with"
-				+std::to_string(ci->op_count)
-				+" opernads.");
+			"Trying to load " + std::to_string(opCnt) + " operands from instruction with" + std::to_string(ci->op_count)
+			+ " opernads.");
 	}
 
 	std::size_t startOp = ci->op_count - opCnt;
@@ -1050,12 +951,12 @@ std::vector<llvm::Value*> Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::_loadO
 		auto* type = _checkTypeConversion(irb, dstType, ct);
 		if (type != dstType)
 		{
-			throw GenericError(
-				"Invalid combination of destination type and conversion type.");
+			throw GenericError("Invalid combination of destination type and conversion type.");
 		}
 	}
 
-	for (; startOp < ci->op_count; startOp++) {
+	for (; startOp < ci->op_count; startOp++)
+	{
 		auto* op = loadOp(ci, irb, startOp, loadType, dstType, ct);
 		operands.push_back(op);
 	}
@@ -1064,34 +965,25 @@ std::vector<llvm::Value*> Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::_loadO
 }
 
 template <typename CInsn, typename CInsnOp>
-std::vector<llvm::Value*>
-Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::_loadOpsUniversal(
-		CInsn* ci,
-		llvm::IRBuilder<>& irb,
-		std::size_t opCnt,
-		bool strict,
-		eOpConv ict,
-		eOpConv fct)
+std::vector<llvm::Value*> Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::_loadOpsUniversal(
+	CInsn* ci, llvm::IRBuilder<>& irb, std::size_t opCnt, bool strict, eOpConv ict, eOpConv fct)
 {
 	if ((strict && (ci->op_count != opCnt)) || (ci->op_count < opCnt))
 	{
 		throw GenericError(
-				"Trying to load "
-				+std::to_string(opCnt)
-				+" operands from instruction with"
-				+std::to_string(ci->op_count)
-				+" opernads.");
+			"Trying to load " + std::to_string(opCnt) + " operands from instruction with" + std::to_string(ci->op_count)
+			+ " opernads.");
 	}
 
 	auto op0 = loadOp(ci, irb, ci->op_count - opCnt);
 	if (op0->getType()->isIntegerTy())
 	{
-		auto operands = _loadOps(ci, irb, opCnt-1, false, nullptr, op0->getType(), ict);
+		auto operands = _loadOps(ci, irb, opCnt - 1, false, nullptr, op0->getType(), ict);
 		operands.insert(operands.begin(), op0);
 		return operands;
 	}
 
-	auto operands = _loadOps(ci, irb, opCnt-1, false, nullptr, op0->getType(), fct);
+	auto operands = _loadOps(ci, irb, opCnt - 1, false, nullptr, op0->getType(), fct);
 	operands.insert(operands.begin(), op0);
 	return operands;
 }
@@ -1101,11 +993,7 @@ Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::_loadOpsUniversal(
  */
 template <typename CInsn, typename CInsnOp>
 llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpUnary(
-		CInsn* ci,
-		llvm::IRBuilder<>& irb,
-		llvm::Type* loadType,
-		llvm::Type* dstType,
-		eOpConv ct)
+	CInsn* ci, llvm::IRBuilder<>& irb, llvm::Type* loadType, llvm::Type* dstType, eOpConv ct)
 {
 	return _loadOps(ci, irb, 1, true, loadType, dstType, ct)[0];
 }
@@ -1115,10 +1003,7 @@ llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpUnary(
  */
 template <typename CInsn, typename CInsnOp>
 std::pair<llvm::Value*, llvm::Value*>
-Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpBinary(
-		CInsn* ci,
-		llvm::IRBuilder<>& irb,
-		eOpConv ct)
+Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpBinary(CInsn* ci, llvm::IRBuilder<>& irb, eOpConv ct)
 {
 	auto operands = _loadOps(ci, irb, 2, true, nullptr, nullptr, ct);
 	return std::make_pair(operands[0], operands[1]);
@@ -1128,25 +1013,16 @@ Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpBinary(
  * Throws if op_count != 2.
  */
 template <typename CInsn, typename CInsnOp>
-std::pair<llvm::Value*, llvm::Value*>
-Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpBinary(
-		CInsn* ci,
-		llvm::IRBuilder<>& irb,
-		eOpConv ict,
-		eOpConv fct)
+std::pair<llvm::Value*, llvm::Value*> Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpBinary(
+	CInsn* ci, llvm::IRBuilder<>& irb, eOpConv ict, eOpConv fct)
 {
 	auto operands = _loadOpsUniversal(ci, irb, 2, true, ict, fct);
 	return std::make_pair(operands[0], operands[1]);
 }
 
 template <typename CInsn, typename CInsnOp>
-std::pair<llvm::Value*, llvm::Value*>
-Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpBinary(
-		CInsn* ci,
-		llvm::IRBuilder<>& irb,
-		llvm::Type* loadType,
-		llvm::Type* dstType,
-		eOpConv ct)
+std::pair<llvm::Value*, llvm::Value*> Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpBinary(
+	CInsn* ci, llvm::IRBuilder<>& irb, llvm::Type* loadType, llvm::Type* dstType, eOpConv ct)
 {
 	auto operands = _loadOps(ci, irb, 2, true, loadType, dstType, ct);
 	return std::make_pair(operands[0], operands[1]);
@@ -1156,10 +1032,8 @@ Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpBinary(
  * Throws if op_count != 2.
  */
 template <typename CInsn, typename CInsnOp>
-llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpBinaryOp0(
-		CInsn* ci,
-		llvm::IRBuilder<>& irb,
-		llvm::Type* ty)
+llvm::Value*
+Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpBinaryOp0(CInsn* ci, llvm::IRBuilder<>& irb, llvm::Type* ty)
 {
 	auto operand = loadOp(ci, irb, 0, ty);
 	return operand;
@@ -1169,10 +1043,8 @@ llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpBinaryOp0(
  * Throws if op_count != 2.
  */
 template <typename CInsn, typename CInsnOp>
-llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpBinaryOp1(
-		CInsn* ci,
-		llvm::IRBuilder<>& irb,
-		llvm::Type* ty)
+llvm::Value*
+Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpBinaryOp1(CInsn* ci, llvm::IRBuilder<>& irb, llvm::Type* ty)
 {
 	auto operand = loadOp(ci, irb, 1, ty);
 	return operand;
@@ -1183,10 +1055,7 @@ llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpBinaryOp1(
  */
 template <typename CInsn, typename CInsnOp>
 std::tuple<llvm::Value*, llvm::Value*, llvm::Value*>
-Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpTernary(
-		CInsn* ci,
-		llvm::IRBuilder<>& irb,
-		eOpConv ct)
+Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpTernary(CInsn* ci, llvm::IRBuilder<>& irb, eOpConv ct)
 {
 	auto operands = _loadOps(ci, irb, 3, true, nullptr, nullptr, ct);
 	return std::make_tuple(operands[0], operands[1], operands[2]);
@@ -1196,12 +1065,8 @@ Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpTernary(
  * Throws if op_count != 3.
  */
 template <typename CInsn, typename CInsnOp>
-std::tuple<llvm::Value*, llvm::Value*, llvm::Value*>
-Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpTernary(
-		CInsn* ci,
-		llvm::IRBuilder<>& irb,
-		eOpConv ict,
-		eOpConv fct)
+std::tuple<llvm::Value*, llvm::Value*, llvm::Value*> Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpTernary(
+	CInsn* ci, llvm::IRBuilder<>& irb, eOpConv ict, eOpConv fct)
 {
 	auto operands = _loadOpsUniversal(ci, irb, 3, true, ict, fct);
 	return std::make_tuple(operands[0], operands[1], operands[2]);
@@ -1211,13 +1076,8 @@ Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpTernary(
  * Throws if op_count != 3.
  */
 template <typename CInsn, typename CInsnOp>
-std::tuple<llvm::Value*, llvm::Value*, llvm::Value*>
-Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpTernary(
-		CInsn* ci,
-		llvm::IRBuilder<>& irb,
-		llvm::Type* loadType,
-		llvm::Type* dstType,
-		eOpConv ct)
+std::tuple<llvm::Value*, llvm::Value*, llvm::Value*> Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpTernary(
+	CInsn* ci, llvm::IRBuilder<>& irb, llvm::Type* loadType, llvm::Type* dstType, eOpConv ct)
 {
 	auto operands = _loadOps(ci, irb, 3, true, loadType, dstType, ct);
 	return std::make_tuple(operands[0], operands[1], operands[2]);
@@ -1227,11 +1087,8 @@ Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpTernary(
  * Throws if op_count not in {2, 3}.
  */
 template <typename CInsn, typename CInsnOp>
-std::pair<llvm::Value*, llvm::Value*>
-Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpBinaryOrTernaryOp1Op2(
-		CInsn* ci,
-		llvm::IRBuilder<>& irb,
-		eOpConv ct)
+std::pair<llvm::Value*, llvm::Value*> Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpBinaryOrTernaryOp1Op2(
+	CInsn* ci, llvm::IRBuilder<>& irb, eOpConv ct)
 {
 	auto operands = _loadOps(ci, irb, 2, false, nullptr, nullptr, ct);
 	return std::make_pair(operands[0], operands[1]);
@@ -1241,12 +1098,8 @@ Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpBinaryOrTernaryOp1Op2(
  * Throws if op_count not in {2, 3}.
  */
 template <typename CInsn, typename CInsnOp>
-std::pair<llvm::Value*, llvm::Value*>
-Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpBinaryOrTernaryOp1Op2(
-		CInsn* ci,
-		llvm::IRBuilder<>& irb,
-		eOpConv ict,
-		eOpConv fct)
+std::pair<llvm::Value*, llvm::Value*> Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpBinaryOrTernaryOp1Op2(
+	CInsn* ci, llvm::IRBuilder<>& irb, eOpConv ict, eOpConv fct)
 {
 	auto operands = _loadOpsUniversal(ci, irb, 2, false, ict, fct);
 	return std::make_pair(operands[0], operands[1]);
@@ -1257,9 +1110,7 @@ Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpBinaryOrTernaryOp1Op2(
  */
 template <typename CInsn, typename CInsnOp>
 std::tuple<llvm::Value*, llvm::Value*, llvm::Value*>
-Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpQuaternaryOp1Op2Op3(
-		CInsn* ci,
-		llvm::IRBuilder<>& irb)
+Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpQuaternaryOp1Op2Op3(CInsn* ci, llvm::IRBuilder<>& irb)
 {
 	auto operands = _loadOps(ci, irb, 3, false);
 	return std::make_tuple(operands[0], operands[1], operands[2]);
@@ -1276,9 +1127,7 @@ Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::loadOpQuaternaryOp1Op2Op3(
  */
 template <typename CInsn, typename CInsnOp>
 llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateCarryAdd(
-		llvm::Value* add,
-		llvm::Value* op0,
-		llvm::IRBuilder<>& irb)
+	llvm::Value* add, llvm::Value* op0, llvm::IRBuilder<>& irb)
 {
 	return irb.CreateICmpULT(add, op0);
 }
@@ -1294,10 +1143,7 @@ llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateCarryAdd(
  */
 template <typename CInsn, typename CInsnOp>
 llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateCarryAddC(
-		llvm::Value* op0,
-		llvm::Value* op1,
-		llvm::IRBuilder<>& irb,
-		llvm::Value* cf)
+	llvm::Value* op0, llvm::Value* op1, llvm::IRBuilder<>& irb, llvm::Value* cf)
 {
 	auto* add1 = irb.CreateAdd(op0, op1);
 	if (cf == nullptr)
@@ -1317,9 +1163,7 @@ llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateCarryAddC(
  */
 template <typename CInsn, typename CInsnOp>
 llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateCarryAddInt4(
-		llvm::Value* op0,
-		llvm::Value* op1,
-		llvm::IRBuilder<>& irb)
+	llvm::Value* op0, llvm::Value* op1, llvm::IRBuilder<>& irb)
 {
 	auto* ci15 = llvm::ConstantInt::get(op0->getType(), 15);
 	auto* and0 = irb.CreateAnd(op0, ci15);
@@ -1333,10 +1177,7 @@ llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateCarryAddInt
  */
 template <typename CInsn, typename CInsnOp>
 llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateCarryAddCInt4(
-		llvm::Value* op0,
-		llvm::Value* op1,
-		llvm::IRBuilder<>& irb,
-		llvm::Value* cf)
+	llvm::Value* op0, llvm::Value* op1, llvm::IRBuilder<>& irb, llvm::Value* cf)
 {
 	auto* ci15 = llvm::ConstantInt::get(op0->getType(), 15);
 	auto* and0 = irb.CreateAnd(op0, ci15);
@@ -1344,11 +1185,7 @@ llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateCarryAddCIn
 	auto* a = irb.CreateAdd(and0, and1);
 	if (cf == nullptr)
 	{
-		cf = loadRegister(
-				getCarryRegister(),
-				irb,
-				a->getType(),
-				eOpConv::ZEXT_TRUNC_OR_BITCAST);
+		cf = loadRegister(getCarryRegister(), irb, a->getType(), eOpConv::ZEXT_TRUNC_OR_BITCAST);
 	}
 	auto* cfc = irb.CreateZExtOrTrunc(cf, a->getType());
 	auto* add = irb.CreateAdd(a, cfc);
@@ -1360,17 +1197,12 @@ llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateCarryAddCIn
  */
 template <typename CInsn, typename CInsnOp>
 llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateOverflowAdd(
-		llvm::Value* add,
-		llvm::Value* op0,
-		llvm::Value* op1,
-		llvm::IRBuilder<>& irb)
+	llvm::Value* add, llvm::Value* op0, llvm::Value* op1, llvm::IRBuilder<>& irb)
 {
 	auto* xor0 = irb.CreateXor(op0, add);
 	auto* xor1 = irb.CreateXor(op1, add);
 	auto* ofAnd = irb.CreateAnd(xor0, xor1);
-	return irb.CreateICmpSLT(
-			ofAnd,
-			llvm::ConstantInt::get(ofAnd->getType(), 0));
+	return irb.CreateICmpSLT(ofAnd, llvm::ConstantInt::get(ofAnd->getType(), 0));
 }
 
 /**
@@ -1378,11 +1210,7 @@ llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateOverflowAdd
  */
 template <typename CInsn, typename CInsnOp>
 llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateOverflowAddC(
-		llvm::Value* add,
-		llvm::Value* op0,
-		llvm::Value* op1,
-		llvm::IRBuilder<>& irb,
-		llvm::Value* cf)
+	llvm::Value* add, llvm::Value* op0, llvm::Value* op1, llvm::IRBuilder<>& irb, llvm::Value* cf)
 {
 	if (cf == nullptr)
 	{
@@ -1401,17 +1229,12 @@ llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateOverflowAdd
  */
 template <typename CInsn, typename CInsnOp>
 llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateOverflowSub(
-		llvm::Value* sub,
-		llvm::Value* op0,
-		llvm::Value* op1,
-		llvm::IRBuilder<>& irb)
+	llvm::Value* sub, llvm::Value* op0, llvm::Value* op1, llvm::IRBuilder<>& irb)
 {
 	auto* xor0 = irb.CreateXor(op0, op1);
 	auto* xor1 = irb.CreateXor(op0, sub);
 	auto* ofAnd = irb.CreateAnd(xor0, xor1);
-	return irb.CreateICmpSLT(
-			ofAnd,
-			llvm::ConstantInt::get(ofAnd->getType(), 0));
+	return irb.CreateICmpSLT(ofAnd, llvm::ConstantInt::get(ofAnd->getType(), 0));
 }
 
 /**
@@ -1419,11 +1242,7 @@ llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateOverflowSub
  */
 template <typename CInsn, typename CInsnOp>
 llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateOverflowSubC(
-		llvm::Value* sub,
-		llvm::Value* op0,
-		llvm::Value* op1,
-		llvm::IRBuilder<>& irb,
-		llvm::Value* cf)
+	llvm::Value* sub, llvm::Value* op0, llvm::Value* op1, llvm::IRBuilder<>& irb, llvm::Value* cf)
 {
 	if (cf == nullptr)
 	{
@@ -1434,9 +1253,7 @@ llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateOverflowSub
 	auto* xor0 = irb.CreateXor(op0, op1);
 	auto* xor1 = irb.CreateXor(op0, ofSub);
 	auto* ofAnd = irb.CreateAnd(xor0, xor1);
-	return irb.CreateICmpSLT(
-			ofAnd,
-			llvm::ConstantInt::get(ofAnd->getType(), 0));
+	return irb.CreateICmpSLT(ofAnd, llvm::ConstantInt::get(ofAnd->getType(), 0));
 }
 
 /**
@@ -1444,9 +1261,7 @@ llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateOverflowSub
  */
 template <typename CInsn, typename CInsnOp>
 llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateBorrowSub(
-		llvm::Value* op0,
-		llvm::Value* op1,
-		llvm::IRBuilder<>& irb)
+	llvm::Value* op0, llvm::Value* op1, llvm::IRBuilder<>& irb)
 {
 	return irb.CreateICmpULT(op0, op1);
 }
@@ -1456,11 +1271,7 @@ llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateBorrowSub(
  */
 template <typename CInsn, typename CInsnOp>
 llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateBorrowSubC(
-		llvm::Value* sub,
-		llvm::Value* op0,
-		llvm::Value* op1,
-		llvm::IRBuilder<>& irb,
-		llvm::Value* cf)
+	llvm::Value* sub, llvm::Value* op0, llvm::Value* op1, llvm::IRBuilder<>& irb, llvm::Value* cf)
 {
 	if (cf == nullptr)
 	{
@@ -1482,9 +1293,7 @@ llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateBorrowSubC(
  */
 template <typename CInsn, typename CInsnOp>
 llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateBorrowSubInt4(
-		llvm::Value* op0,
-		llvm::Value* op1,
-		llvm::IRBuilder<>& irb)
+	llvm::Value* op0, llvm::Value* op1, llvm::IRBuilder<>& irb)
 {
 	auto* ci15 = llvm::ConstantInt::get(op0->getType(), 15);
 	auto* and0 = irb.CreateAnd(op0, ci15);
@@ -1498,10 +1307,7 @@ llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateBorrowSubIn
  */
 template <typename CInsn, typename CInsnOp>
 llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateBorrowSubCInt4(
-		llvm::Value* op0,
-		llvm::Value* op1,
-		llvm::IRBuilder<>& irb,
-		llvm::Value* cf)
+	llvm::Value* op0, llvm::Value* op1, llvm::IRBuilder<>& irb, llvm::Value* cf)
 {
 	auto* ci15 = llvm::ConstantInt::get(op0->getType(), 15);
 	auto* and0 = irb.CreateAnd(op0, ci15);
@@ -1529,15 +1335,13 @@ llvm::IntegerType* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getDefaultTyp
 }
 
 template <typename CInsn, typename CInsnOp>
-llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getThisInsnAddress(
-		cs_insn* i)
+llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getThisInsnAddress(cs_insn* i)
 {
 	return llvm::ConstantInt::get(getDefaultType(), i->address);
 }
 
 template <typename CInsn, typename CInsnOp>
-llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getNextInsnAddress(
-		cs_insn* i)
+llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getNextInsnAddress(cs_insn* i)
 {
 	return llvm::ConstantInt::get(getDefaultType(), i->address + i->size);
 }
@@ -1546,8 +1350,7 @@ llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getNextInsnAddress(
  * Generate pseudo assembly function name from the given instruction @a insn.
  */
 template <typename CInsn, typename CInsnOp>
-std::string Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getPseudoAsmFunctionName(
-		cs_insn* insn)
+std::string Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getPseudoAsmFunctionName(cs_insn* insn)
 {
 	return "__asm_" + std::string(insn->mnemonic);
 }
@@ -1560,20 +1363,14 @@ std::string Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getPseudoAsmFunction
  */
 template <typename CInsn, typename CInsnOp>
 llvm::Function* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getPseudoAsmFunction(
-		cs_insn* insn,
-		llvm::FunctionType* type,
-		const std::string& name)
+	cs_insn* insn, llvm::FunctionType* type, const std::string& name)
 {
 	auto n = name.empty() ? getPseudoAsmFunctionName(insn) : name;
 	auto p = std::make_pair(n, type);
 	auto fIt = _insn2asmFunctions.find(p);
 	if (fIt == _insn2asmFunctions.end())
 	{
-		auto* fnc = llvm::Function::Create(
-				type,
-				llvm::GlobalValue::LinkageTypes::ExternalLinkage,
-				n,
-				_module);
+		auto* fnc = llvm::Function::Create(type, llvm::GlobalValue::LinkageTypes::ExternalLinkage, n, _module);
 		_insn2asmFunctions[p] = fnc;
 		_asmFunctions.insert(fnc);
 		return fnc;
@@ -1590,23 +1387,14 @@ llvm::Function* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getPseudoAsmFunc
  */
 template <typename CInsn, typename CInsnOp>
 llvm::Function* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getPseudoAsmFunction(
-		cs_insn* insn,
-		llvm::Type* retType,
-		llvm::ArrayRef<llvm::Type*> params,
-		const std::string& name)
+	cs_insn* insn, llvm::Type* retType, llvm::ArrayRef<llvm::Type*> params, const std::string& name)
 {
-	return getPseudoAsmFunction(
-			insn,
-			llvm::FunctionType::get(retType, params, false),
-			name);
+	return getPseudoAsmFunction(insn, llvm::FunctionType::get(retType, params, false), name);
 }
 
 template <typename CInsn, typename CInsnOp>
 llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateTypeConversion(
-		llvm::IRBuilder<>& irb,
-		llvm::Value* from,
-		llvm::Type* to,
-		eOpConv ct)
+	llvm::IRBuilder<>& irb, llvm::Value* from, llvm::Type* to, eOpConv ct)
 {
 	if (to == nullptr || from->getType() == to)
 	{
@@ -1617,172 +1405,159 @@ llvm::Value* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateTypeConvers
 
 	switch (ct)
 	{
-		case eOpConv::SEXT_TRUNC_OR_BITCAST:
+	case eOpConv::SEXT_TRUNC_OR_BITCAST: {
+		if (!to->isIntegerTy())
 		{
-			if (!to->isIntegerTy())
-			{
-				throw GenericError("Invalid combination of conversion method and destination type");
-			}
+			throw GenericError("Invalid combination of conversion method and destination type");
+		}
 
-			if (from->getType()->isIntegerTy())
+		if (from->getType()->isIntegerTy())
+		{
+			ret = irb.CreateSExtOrTrunc(from, to);
+		}
+		else
+		{
+			auto size = _module->getDataLayout().getTypeStoreSizeInBits(from->getType());
+			auto intTy = irb.getIntNTy(size);
+			ret = irb.CreateBitCast(from, intTy);
+			ret = irb.CreateZExtOrTrunc(ret, to);
+		}
+		break;
+	}
+	case eOpConv::ZEXT_TRUNC_OR_BITCAST: {
+		if (!to->isIntegerTy())
+		{
+			throw GenericError("Invalid combination of conversion method and destination type");
+		}
+
+		if (from->getType()->isIntegerTy())
+		{
+			ret = irb.CreateZExtOrTrunc(from, to);
+		}
+		else
+		{
+			auto size = _module->getDataLayout().getTypeStoreSizeInBits(from->getType());
+			auto intTy = irb.getIntNTy(size);
+			ret = irb.CreateBitCast(from, intTy);
+			ret = irb.CreateZExtOrTrunc(ret, to);
+		}
+		break;
+	}
+	case eOpConv::FPCAST_OR_BITCAST: {
+		if (!to->isFloatingPointTy())
+		{
+			throw GenericError("Invalid combination of conversion method and destination type");
+		}
+
+		if (from->getType()->isFloatingPointTy())
+		{
+			ret = irb.CreateFPCast(from, to);
+		}
+		else
+		{
+			auto isize = _module->getDataLayout().getTypeStoreSizeInBits(from->getType());
+			auto dsize = _module->getDataLayout().getTypeStoreSizeInBits(irb.getDoubleTy());
+			auto fsize = _module->getDataLayout().getTypeStoreSizeInBits(irb.getFloatTy());
+			auto lsize = _module->getDataLayout().getTypeStoreSizeInBits(llvm::Type::getFP128Ty(_module->getContext()));
+
+			if (isize == fsize)
 			{
-				ret = irb.CreateSExtOrTrunc(from, to);
+				from = irb.CreateBitCast(from, irb.getFloatTy());
+			}
+			else if (isize == dsize)
+			{
+				from = irb.CreateBitCast(from, irb.getDoubleTy());
+			}
+			else if (isize == lsize)
+			{
+				from = irb.CreateBitCast(from, llvm::Type::getFP128Ty(_module->getContext()));
 			}
 			else
 			{
-				auto size = _module->getDataLayout().getTypeStoreSizeInBits(from->getType());
-				auto intTy = irb.getIntNTy(size);
-				ret = irb.CreateBitCast(from, intTy);
-				ret = irb.CreateZExtOrTrunc(ret, to);
-			}
-			break;
-		}
-		case eOpConv::ZEXT_TRUNC_OR_BITCAST:
-		{
-			if (!to->isIntegerTy())
-			{
-				throw GenericError("Invalid combination of conversion method and destination type");
+				throw GenericError("Unable to create bitcast to floating point type.");
 			}
 
-			if (from->getType()->isIntegerTy())
-			{
-				ret = irb.CreateZExtOrTrunc(from, to);
-			}
-			else
-			{
-				auto size = _module->getDataLayout().getTypeStoreSizeInBits(from->getType());
-				auto intTy = irb.getIntNTy(size);
-				ret = irb.CreateBitCast(from, intTy);
-				ret = irb.CreateZExtOrTrunc(ret, to);
-			}
-			break;
+			ret = irb.CreateFPCast(from, to);
 		}
-		case eOpConv::FPCAST_OR_BITCAST:
+		break;
+	}
+	case eOpConv::SITOFP_OR_FPCAST: {
+		if (!to->isFloatingPointTy())
 		{
-			if (!to->isFloatingPointTy())
-			{
-				throw GenericError("Invalid combination of conversion method and destination type");
-			}
-
-			if (from->getType()->isFloatingPointTy())
-			{
-				ret = irb.CreateFPCast(from, to);
-			}
-			else
-			{
-				auto isize = _module->getDataLayout().getTypeStoreSizeInBits(from->getType());
-				auto dsize = _module->getDataLayout().getTypeStoreSizeInBits(irb.getDoubleTy());
-				auto fsize = _module->getDataLayout().getTypeStoreSizeInBits(irb.getFloatTy());
-				auto lsize = _module->getDataLayout().getTypeStoreSizeInBits(llvm::Type::getFP128Ty(_module->getContext()));
-
-				if (isize == fsize)
-				{
-					from = irb.CreateBitCast(from, irb.getFloatTy());
-				}
-				else if (isize == dsize)
-				{
-					from = irb.CreateBitCast(from, irb.getDoubleTy());
-				}
-				else if (isize == lsize)
-				{
-					from = irb.CreateBitCast(from, llvm::Type::getFP128Ty(_module->getContext()));
-				}
-				else
-				{
-					throw GenericError("Unable to create bitcast to floating point type.");
-				}
-
-				ret = irb.CreateFPCast(from, to);
-			}
-			break;
+			throw GenericError("Invalid combination of conversion method and destination type");
 		}
-		case eOpConv::SITOFP_OR_FPCAST:
+		if (from->getType()->isFloatingPointTy())
 		{
-			if (!to->isFloatingPointTy())
-			{
-				throw GenericError("Invalid combination of conversion method and destination type");
-			}
-			if (from->getType()->isFloatingPointTy())
-			{
-				ret = irb.CreateFPCast(from, to);
-			}
-			else
-			{
-				ret = irb.CreateSIToFP(from, to);
-			}
-			break;
+			ret = irb.CreateFPCast(from, to);
 		}
-		case eOpConv::UITOFP_OR_FPCAST:
+		else
 		{
-			if (!to->isFloatingPointTy())
-			{
-				throw GenericError("Invalid combination of conversion method and destination type");
-			}
-			if (from->getType()->isFloatingPointTy())
-			{
-				ret = irb.CreateFPCast(from, to);
-			}
-			else
-			{
-				ret = irb.CreateUIToFP(from, to);
-			}
-			break;
+			ret = irb.CreateSIToFP(from, to);
 		}
-		case eOpConv::NOTHING:
+		break;
+	}
+	case eOpConv::UITOFP_OR_FPCAST: {
+		if (!to->isFloatingPointTy())
 		{
-			ret = from;
-			break;
+			throw GenericError("Invalid combination of conversion method and destination type");
 		}
-		case eOpConv::THROW:
-		default:
+		if (from->getType()->isFloatingPointTy())
 		{
-			throw GenericError("Unhandled eOpConv type.");
+			ret = irb.CreateFPCast(from, to);
 		}
+		else
+		{
+			ret = irb.CreateUIToFP(from, to);
+		}
+		break;
+	}
+	case eOpConv::NOTHING: {
+		ret = from;
+		break;
+	}
+	case eOpConv::THROW:
+	default: {
+		throw GenericError("Unhandled eOpConv type.");
+	}
 	}
 
 	return ret;
 }
 
 template <typename CInsn, typename CInsnOp>
-llvm::Type* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::_checkTypeConversion(
-		llvm::IRBuilder<>& irb,
-		llvm::Type* to,
-		eOpConv ct)
+llvm::Type*
+Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::_checkTypeConversion(llvm::IRBuilder<>& irb, llvm::Type* to, eOpConv ct)
 {
 	switch (ct)
 	{
-		case eOpConv::ZEXT_TRUNC_OR_BITCAST:
-		case eOpConv::SEXT_TRUNC_OR_BITCAST:
+	case eOpConv::ZEXT_TRUNC_OR_BITCAST:
+	case eOpConv::SEXT_TRUNC_OR_BITCAST: {
+		if (!to->isIntegerTy())
 		{
-			if (!to->isIntegerTy())
-			{
-				auto size = _module->getDataLayout().getTypeStoreSizeInBits(to);
-				return irb.getIntNTy(size);
-			}
-			break;
+			auto size = _module->getDataLayout().getTypeStoreSizeInBits(to);
+			return irb.getIntNTy(size);
 		}
-		case eOpConv::FPCAST_OR_BITCAST:
-		case eOpConv::SITOFP_OR_FPCAST:
-		case eOpConv::UITOFP_OR_FPCAST:
+		break;
+	}
+	case eOpConv::FPCAST_OR_BITCAST:
+	case eOpConv::SITOFP_OR_FPCAST:
+	case eOpConv::UITOFP_OR_FPCAST: {
+		if (!to->isFloatingPointTy())
 		{
-			if (!to->isFloatingPointTy())
+			auto flSize = _module->getDataLayout().getTypeStoreSizeInBits(irb.getFloatTy());
+			auto size = _module->getDataLayout().getTypeStoreSizeInBits(to);
+			if (size <= flSize)
 			{
-				auto flSize = _module->getDataLayout().getTypeStoreSizeInBits(
-							irb.getFloatTy());
-				auto size = _module->getDataLayout().getTypeStoreSizeInBits(to);
-				if (size <= flSize)
-				{
-					return irb.getFloatTy();
-				}
+				return irb.getFloatTy();
+			}
 
-				return irb.getDoubleTy();
-			}
-			break;
+			return irb.getDoubleTy();
 		}
-		default:
-		{
-			return to;
-		}
+		break;
+	}
+	default: {
+		return to;
+	}
 	}
 
 	return to;
@@ -1793,16 +1568,11 @@ llvm::Type* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::_checkTypeConversion
  */
 template <typename CInsn, typename CInsnOp>
 void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmOp0Fnc(
-		cs_insn* i,
-		CInsn* ci,
-		llvm::IRBuilder<>& irb)
+	cs_insn* i, CInsn* ci, llvm::IRBuilder<>& irb)
 {
 	EXPECT_IS_UNARY(i, ci, irb);
 
-	llvm::Function* fnc = getPseudoAsmFunction(
-			i,
-			getDefaultType(),
-			llvm::ArrayRef<llvm::Type*>{});
+	llvm::Function* fnc = getPseudoAsmFunction(i, getDefaultType(), llvm::ArrayRef<llvm::Type*>{});
 
 	auto* c = irb.CreateCall(fnc, llvm::ArrayRef<llvm::Value*>{});
 
@@ -1814,18 +1584,13 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmOp0Fnc(
  */
 template <typename CInsn, typename CInsnOp>
 void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmFncOp0(
-		cs_insn* i,
-		CInsn* ci,
-		llvm::IRBuilder<>& irb)
+	cs_insn* i, CInsn* ci, llvm::IRBuilder<>& irb)
 {
 	EXPECT_IS_UNARY(i, ci, irb);
 
 	op0 = loadOp(ci->operands[0], irb);
 
-	llvm::Function* fnc = getPseudoAsmFunction(
-			i,
-			irb.getVoidTy(),
-			llvm::ArrayRef<llvm::Type*>{op0->getType()});
+	llvm::Function* fnc = getPseudoAsmFunction(i, irb.getVoidTy(), llvm::ArrayRef<llvm::Type*>{op0->getType()});
 
 	irb.CreateCall(fnc, llvm::ArrayRef<llvm::Value*>{op0});
 }
@@ -1835,18 +1600,13 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmFncOp0(
  */
 template <typename CInsn, typename CInsnOp>
 void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmOp0FncOp0(
-		cs_insn* i,
-		CInsn* ci,
-		llvm::IRBuilder<>& irb)
+	cs_insn* i, CInsn* ci, llvm::IRBuilder<>& irb)
 {
 	EXPECT_IS_UNARY(i, ci, irb);
 
 	op0 = loadOp(ci->operands[0], irb);
 
-	llvm::Function* fnc = getPseudoAsmFunction(
-			i,
-			op0->getType(),
-			llvm::ArrayRef<llvm::Type*>{op0->getType()});
+	llvm::Function* fnc = getPseudoAsmFunction(i, op0->getType(), llvm::ArrayRef<llvm::Type*>{op0->getType()});
 
 	auto* c = irb.CreateCall(fnc, llvm::ArrayRef<llvm::Value*>{op0});
 
@@ -1858,19 +1618,15 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmOp0FncOp0
  */
 template <typename CInsn, typename CInsnOp>
 void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmFncOp0Op1(
-		cs_insn* i,
-		CInsn* ci,
-		llvm::IRBuilder<>& irb)
+	cs_insn* i, CInsn* ci, llvm::IRBuilder<>& irb)
 {
 	EXPECT_IS_BINARY(i, ci, irb);
 
 	op0 = loadOp(ci->operands[0], irb);
 	op1 = loadOp(ci->operands[1], irb);
 
-	llvm::Function* fnc = getPseudoAsmFunction(
-			i,
-			irb.getVoidTy(),
-			llvm::ArrayRef<llvm::Type*>{op0->getType(), op1->getType()});
+	llvm::Function* fnc =
+		getPseudoAsmFunction(i, irb.getVoidTy(), llvm::ArrayRef<llvm::Type*>{op0->getType(), op1->getType()});
 
 	irb.CreateCall(fnc, llvm::ArrayRef<llvm::Value*>{op0, op1});
 }
@@ -1880,18 +1636,13 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmFncOp0Op1
  */
 template <typename CInsn, typename CInsnOp>
 void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmOp0FncOp1(
-		cs_insn* i,
-		CInsn* ci,
-		llvm::IRBuilder<>& irb)
+	cs_insn* i, CInsn* ci, llvm::IRBuilder<>& irb)
 {
 	EXPECT_IS_BINARY(i, ci, irb);
 
 	op1 = loadOp(ci->operands[1], irb);
 
-	llvm::Function* fnc = getPseudoAsmFunction(
-			i,
-			op1->getType(),
-			llvm::ArrayRef<llvm::Type*>{op1->getType()});
+	llvm::Function* fnc = getPseudoAsmFunction(i, op1->getType(), llvm::ArrayRef<llvm::Type*>{op1->getType()});
 
 	auto* c = irb.CreateCall(fnc, llvm::ArrayRef<llvm::Value*>{op1});
 
@@ -1903,19 +1654,15 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmOp0FncOp1
  */
 template <typename CInsn, typename CInsnOp>
 void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmOp0FncOp0Op1(
-		cs_insn* i,
-		CInsn* ci,
-		llvm::IRBuilder<>& irb)
+	cs_insn* i, CInsn* ci, llvm::IRBuilder<>& irb)
 {
 	EXPECT_IS_BINARY(i, ci, irb);
 
 	op0 = loadOp(ci->operands[0], irb);
 	op1 = loadOp(ci->operands[1], irb);
 
-	llvm::Function* fnc = getPseudoAsmFunction(
-			i,
-			op0->getType(),
-			llvm::ArrayRef<llvm::Type*>{op0->getType(), op1->getType()});
+	llvm::Function* fnc =
+		getPseudoAsmFunction(i, op0->getType(), llvm::ArrayRef<llvm::Type*>{op0->getType(), op1->getType()});
 
 	auto* c = irb.CreateCall(fnc, llvm::ArrayRef<llvm::Value*>{op0, op1});
 
@@ -1927,9 +1674,7 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmOp0FncOp0
  */
 template <typename CInsn, typename CInsnOp>
 void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmFncOp0Op1Op2(
-		cs_insn* i,
-		CInsn* ci,
-		llvm::IRBuilder<>& irb)
+	cs_insn* i, CInsn* ci, llvm::IRBuilder<>& irb)
 {
 	EXPECT_IS_TERNARY(i, ci, irb);
 
@@ -1938,12 +1683,7 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmFncOp0Op1
 	op2 = loadOp(ci->operands[2], irb);
 
 	llvm::Function* fnc = getPseudoAsmFunction(
-			i,
-			irb.getVoidTy(),
-			llvm::ArrayRef<llvm::Type*>{
-					op0->getType(),
-					op1->getType(),
-					op2->getType()});
+		i, irb.getVoidTy(), llvm::ArrayRef<llvm::Type*>{op0->getType(), op1->getType(), op2->getType()});
 
 	irb.CreateCall(fnc, llvm::ArrayRef<llvm::Value*>{op0, op1, op2});
 }
@@ -1953,21 +1693,15 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmFncOp0Op1
  */
 template <typename CInsn, typename CInsnOp>
 void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmOp0FncOp1Op2(
-		cs_insn* i,
-		CInsn* ci,
-		llvm::IRBuilder<>& irb)
+	cs_insn* i, CInsn* ci, llvm::IRBuilder<>& irb)
 {
 	EXPECT_IS_TERNARY(i, ci, irb);
 
 	op1 = loadOp(ci->operands[1], irb);
 	op2 = loadOp(ci->operands[2], irb);
 
-	llvm::Function* fnc = getPseudoAsmFunction(
-			i,
-			getDefaultType(),
-			llvm::ArrayRef<llvm::Type*>{
-					op1->getType(),
-					op2->getType()});
+	llvm::Function* fnc =
+		getPseudoAsmFunction(i, getDefaultType(), llvm::ArrayRef<llvm::Type*>{op1->getType(), op2->getType()});
 
 	auto* c = irb.CreateCall(fnc, llvm::ArrayRef<llvm::Value*>{op1, op2});
 
@@ -1979,9 +1713,7 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmOp0FncOp1
  */
 template <typename CInsn, typename CInsnOp>
 void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmOp0FncOp0Op1Op2(
-		cs_insn* i,
-		CInsn* ci,
-		llvm::IRBuilder<>& irb)
+	cs_insn* i, CInsn* ci, llvm::IRBuilder<>& irb)
 {
 	EXPECT_IS_TERNARY(i, ci, irb);
 
@@ -1990,12 +1722,7 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmOp0FncOp0
 	op2 = loadOp(ci->operands[2], irb);
 
 	llvm::Function* fnc = getPseudoAsmFunction(
-			i,
-			op0->getType(),
-			llvm::ArrayRef<llvm::Type*>{
-					op0->getType(),
-					op1->getType(),
-					op2->getType()});
+		i, op0->getType(), llvm::ArrayRef<llvm::Type*>{op0->getType(), op1->getType(), op2->getType()});
 
 	auto* c = irb.CreateCall(fnc, llvm::ArrayRef<llvm::Value*>{op0, op1, op2});
 
@@ -2007,9 +1734,7 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmOp0FncOp0
  */
 template <typename CInsn, typename CInsnOp>
 void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmFncOp0Op1Op2Op3(
-		cs_insn* i,
-		CInsn* ci,
-		llvm::IRBuilder<>& irb)
+	cs_insn* i, CInsn* ci, llvm::IRBuilder<>& irb)
 {
 	EXPECT_IS_QUATERNARY(i, ci, irb);
 
@@ -2019,13 +1744,9 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmFncOp0Op1
 	op3 = loadOp(ci->operands[3], irb);
 
 	llvm::Function* fnc = getPseudoAsmFunction(
-			i,
-			irb.getVoidTy(),
-			llvm::ArrayRef<llvm::Type*>{
-					op0->getType(),
-					op1->getType(),
-					op2->getType(),
-					op3->getType()});
+		i,
+		irb.getVoidTy(),
+		llvm::ArrayRef<llvm::Type*>{op0->getType(), op1->getType(), op2->getType(), op3->getType()});
 
 	irb.CreateCall(fnc, llvm::ArrayRef<llvm::Value*>{op0, op1, op2, op3});
 }
@@ -2035,9 +1756,7 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmFncOp0Op1
  */
 template <typename CInsn, typename CInsnOp>
 void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmOp0FncOp1Op2Op3(
-		cs_insn* i,
-		CInsn* ci,
-		llvm::IRBuilder<>& irb)
+	cs_insn* i, CInsn* ci, llvm::IRBuilder<>& irb)
 {
 	EXPECT_IS_QUATERNARY(i, ci, irb);
 
@@ -2046,12 +1765,7 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmOp0FncOp1
 	op3 = loadOp(ci->operands[3], irb);
 
 	llvm::Function* fnc = getPseudoAsmFunction(
-			i,
-			getDefaultType(),
-			llvm::ArrayRef<llvm::Type*>{
-					op1->getType(),
-					op2->getType(),
-					op3->getType()});
+		i, getDefaultType(), llvm::ArrayRef<llvm::Type*>{op1->getType(), op2->getType(), op3->getType()});
 
 	auto* c = irb.CreateCall(fnc, llvm::ArrayRef<llvm::Value*>{op1, op2, op3});
 
@@ -2063,9 +1777,7 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmOp0FncOp1
  */
 template <typename CInsn, typename CInsnOp>
 void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmOp0FncOp0Op1Op2Op3(
-		cs_insn* i,
-		CInsn* ci,
-		llvm::IRBuilder<>& irb)
+	cs_insn* i, CInsn* ci, llvm::IRBuilder<>& irb)
 {
 	EXPECT_IS_QUATERNARY(i, ci, irb);
 
@@ -2075,13 +1787,7 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmOp0FncOp0
 	op3 = loadOp(ci->operands[3], irb);
 
 	llvm::Function* fnc = getPseudoAsmFunction(
-			i,
-			op0->getType(),
-			llvm::ArrayRef<llvm::Type*>{
-					op0->getType(),
-					op1->getType(),
-					op2->getType(),
-					op3->getType()});
+		i, op0->getType(), llvm::ArrayRef<llvm::Type*>{op0->getType(), op1->getType(), op2->getType(), op3->getType()});
 
 	auto* c = irb.CreateCall(fnc, llvm::ArrayRef<llvm::Value*>{op0, op1, op2, op3});
 
@@ -2093,9 +1799,7 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmOp0FncOp0
  */
 template <typename CInsn, typename CInsnOp>
 void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmOp0Op1FncOp0Op1Op2Op3(
-		cs_insn* i,
-		CInsn* ci,
-		llvm::IRBuilder<>& irb)
+	cs_insn* i, CInsn* ci, llvm::IRBuilder<>& irb)
 {
 	EXPECT_IS_QUATERNARY(i, ci, irb);
 
@@ -2105,15 +1809,9 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmOp0Op1Fnc
 	op3 = loadOp(ci->operands[3], irb);
 
 	llvm::Function* fnc = getPseudoAsmFunction(
-			i,
-			llvm::StructType::create(llvm::ArrayRef<llvm::Type*>{
-					op0->getType(),
-					op1->getType()}),
-			llvm::ArrayRef<llvm::Type*>{
-					op0->getType(),
-					op1->getType(),
-					op2->getType(),
-					op3->getType()});
+		i,
+		llvm::StructType::create(llvm::ArrayRef<llvm::Type*>{op0->getType(), op1->getType()}),
+		llvm::ArrayRef<llvm::Type*>{op0->getType(), op1->getType(), op2->getType(), op3->getType()});
 
 	auto* c = irb.CreateCall(fnc, llvm::ArrayRef<llvm::Value*>{op0, op1, op2, op3});
 
@@ -2136,9 +1834,7 @@ uint8_t Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::getOperandAccess(CInsnOp
  */
 template <typename CInsn, typename CInsnOp>
 void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmGeneric(
-		cs_insn* i,
-		CInsn* ci,
-		llvm::IRBuilder<>& irb)
+	cs_insn* i, CInsn* ci, llvm::IRBuilder<>& irb)
 {
 	std::vector<llvm::Value*> vals;
 	std::vector<llvm::Type*> types;
@@ -2200,7 +1896,7 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmGeneric(
 			}
 		}
 
-		for (auto r : readRegs)
+		for (auto r: readRegs)
 		{
 			auto* op = loadRegister(r, irb);
 			vals.push_back(op);
@@ -2209,10 +1905,7 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmGeneric(
 	}
 
 	auto* retType = writesOp ? writeType : irb.getVoidTy();
-	llvm::Function* fnc = getPseudoAsmFunction(
-			i,
-			retType,
-			types);
+	llvm::Function* fnc = getPseudoAsmFunction(i, retType, types);
 
 	auto* c = irb.CreateCall(fnc, vals);
 
@@ -2255,20 +1948,16 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translatePseudoAsmGeneric(
 		}
 	}
 
-	for (auto r : writeRegs)
+	for (auto r: writeRegs)
 	{
-		llvm::Value* val = retType->isVoidTy()
-				? llvm::cast<llvm::Value>(
-						llvm::UndefValue::get(getRegisterType(r)))
-				: llvm::cast<llvm::Value>(c);
+		llvm::Value* val = retType->isVoidTy() ? llvm::cast<llvm::Value>(llvm::UndefValue::get(getRegisterType(r)))
+											   : llvm::cast<llvm::Value>(c);
 		storeRegister(r, val, irb);
 	}
 }
 
 template <typename CInsn, typename CInsnOp>
-void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::throwUnexpectedOperands(
-		cs_insn* i,
-		const std::string comment)
+void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::throwUnexpectedOperands(cs_insn* i, const std::string comment)
 {
 	if (!isIgnoreUnexpectedOperands())
 	{
@@ -2277,9 +1966,7 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::throwUnexpectedOperands(
 }
 
 template <typename CInsn, typename CInsnOp>
-void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::throwUnhandledInstructions(
-		cs_insn* i,
-		const std::string comment)
+void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::throwUnhandledInstructions(cs_insn* i, const std::string comment)
 {
 	if (!isIgnoreUnhandledInstructions())
 	{

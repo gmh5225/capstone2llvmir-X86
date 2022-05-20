@@ -29,11 +29,6 @@ endif()
 
 project(capstone2llvmir-X86)
 
-# Packages
-find_package(LLVM REQUIRED CONFIG)
-
-find_package(Clang REQUIRED CONFIG)
-
 # utils
 set(CMKR_CMAKE_FOLDER ${CMAKE_FOLDER})
 if(CMAKE_FOLDER)
@@ -52,6 +47,26 @@ else()
 	set(CMAKE_FOLDER common)
 endif()
 add_subdirectory(common)
+set(CMAKE_FOLDER ${CMKR_CMAKE_FOLDER})
+
+# capstone-retdec
+set(CMKR_CMAKE_FOLDER ${CMAKE_FOLDER})
+if(CMAKE_FOLDER)
+	set(CMAKE_FOLDER "${CMAKE_FOLDER}/capstone-retdec")
+else()
+	set(CMAKE_FOLDER capstone-retdec)
+endif()
+add_subdirectory(capstone-retdec)
+set(CMAKE_FOLDER ${CMKR_CMAKE_FOLDER})
+
+# llvm-retdec
+set(CMKR_CMAKE_FOLDER ${CMAKE_FOLDER})
+if(CMAKE_FOLDER)
+	set(CMAKE_FOLDER "${CMAKE_FOLDER}/llvm-retdec")
+else()
+	set(CMAKE_FOLDER llvm-retdec)
+endif()
+add_subdirectory(llvm-retdec)
 set(CMAKE_FOLDER ${CMKR_CMAKE_FOLDER})
 
 # Target capstone2llvmir-X86
@@ -93,10 +108,6 @@ endif()
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${capstone2llvmir-X86_SOURCES})
 
-add_definitions(
-		${LLVM_DEFINITIONS}
-		${CLANG_DEFINITIONS}
-)
 target_compile_features(capstone2llvmir-X86 PUBLIC
 	cxx_std_20
 )
@@ -107,13 +118,7 @@ target_include_directories(capstone2llvmir-X86 PUBLIC
 	"${CMAKE_SOURCE_DIR}/include/retdec"
 	"${CMAKE_SOURCE_DIR}/include/whereami"
 	"capstone-retdec/include"
-	${LLVM_INCLUDE_DIRS}
-	${CLANG_INCLUDE_DIRS}
-)
-
-target_link_directories(capstone2llvmir-X86 PUBLIC
-	${LLVM_LIBRARY_DIRS}
-	${CLANG_LIBRARY_DIRS}
+	"llvm-retdec/include"
 )
 
 target_link_libraries(capstone2llvmir-X86 PUBLIC

@@ -17,7 +17,7 @@ llvm::Value* generateValueNegate(llvm::IRBuilder<>& irb, llvm::Value* val)
 
 llvm::IntegerType* getIntegerTypeFromByteSize(llvm::Module* module, unsigned sz)
 {
-	sz = sz ? 8*sz : module->getDataLayout().getPointerSizeInBits();
+	sz = sz ? 8 * sz : module->getDataLayout().getPointerSizeInBits();
 	return llvm::Type::getIntNTy(module->getContext(), sz);
 }
 
@@ -26,21 +26,16 @@ llvm::Type* getFloatTypeFromByteSize(llvm::Module* module, unsigned sz)
 	auto& ctx = module->getContext();
 	switch (sz)
 	{
-		case 2: return llvm::Type::getHalfTy(ctx);
-		case 4: return llvm::Type::getFloatTy(ctx);
-		case 8: return llvm::Type::getDoubleTy(ctx);
-		case 10: return llvm::Type::getX86_FP80Ty(ctx);
-		case 16: return llvm::Type::getFP128Ty(ctx);
-		default:
-			throw GenericError("Unhandled value in getFloatTypeFromByteSize().");
-			return llvm::Type::getFloatTy(ctx);
+	case 2: return llvm::Type::getHalfTy(ctx);
+	case 4: return llvm::Type::getFloatTy(ctx);
+	case 8: return llvm::Type::getDoubleTy(ctx);
+	case 10: return llvm::Type::getX86_FP80Ty(ctx);
+	case 16: return llvm::Type::getFP128Ty(ctx);
+	default: throw GenericError("Unhandled value in getFloatTypeFromByteSize()."); return llvm::Type::getFloatTy(ctx);
 	}
 }
 
-llvm::IRBuilder<> _generateIfThen(
-		llvm::Value* cond,
-		llvm::IRBuilder<>& irb,
-		bool reverse)
+llvm::IRBuilder<> _generateIfThen(llvm::Value* cond, llvm::IRBuilder<>& irb, bool reverse)
 {
 	if (auto* ci = llvm::dyn_cast<llvm::ConstantInt>(cond))
 	{
@@ -99,23 +94,17 @@ llvm::IRBuilder<> _generateIfThen(
 	return llvm::IRBuilder<>(body->getTerminator());
 }
 
-llvm::IRBuilder<> generateIfThen(
-		llvm::Value* cond,
-		llvm::IRBuilder<>& irb)
+llvm::IRBuilder<> generateIfThen(llvm::Value* cond, llvm::IRBuilder<>& irb)
 {
 	return _generateIfThen(cond, irb, false);
 }
 
-llvm::IRBuilder<> generateIfNotThen(
-		llvm::Value* cond,
-		llvm::IRBuilder<>& irb)
+llvm::IRBuilder<> generateIfNotThen(llvm::Value* cond, llvm::IRBuilder<>& irb)
 {
 	return _generateIfThen(cond, irb, true);
 }
 
-std::pair<llvm::IRBuilder<>, llvm::IRBuilder<>> generateIfThenElse(
-		llvm::Value* cond,
-		llvm::IRBuilder<>& irb)
+std::pair<llvm::IRBuilder<>, llvm::IRBuilder<>> generateIfThenElse(llvm::Value* cond, llvm::IRBuilder<>& irb)
 {
 	auto* ipBb = irb.GetInsertBlock();
 	auto ipIt = irb.GetInsertPoint();
@@ -137,14 +126,10 @@ std::pair<llvm::IRBuilder<>, llvm::IRBuilder<>> generateIfThenElse(
 
 	irb.SetInsertPoint(ip);
 
-	return std::make_pair(
-			llvm::IRBuilder<>(bodyIf->getTerminator()),
-			llvm::IRBuilder<>(bodyElse->getTerminator()));
+	return std::make_pair(llvm::IRBuilder<>(bodyIf->getTerminator()), llvm::IRBuilder<>(bodyElse->getTerminator()));
 }
 
-std::pair<llvm::IRBuilder<>, llvm::IRBuilder<>> generateWhile(
-		llvm::BranchInst*& branch,
-		llvm::IRBuilder<>& irb)
+std::pair<llvm::IRBuilder<>, llvm::IRBuilder<>> generateWhile(llvm::BranchInst*& branch, llvm::IRBuilder<>& irb)
 {
 	auto* ipBb = irb.GetInsertBlock();
 	auto ipIt = irb.GetInsertPoint();
@@ -158,11 +143,7 @@ std::pair<llvm::IRBuilder<>, llvm::IRBuilder<>> generateWhile(
 	auto* body = before->splitBasicBlock(ip);
 	auto* after = body->splitBasicBlock(ip);
 
-	branch = llvm::BranchInst::Create(
-			body,
-			after,
-			irb.getTrue(),
-			before->getTerminator());
+	branch = llvm::BranchInst::Create(body, after, irb.getTrue(), before->getTerminator());
 	before->getTerminator()->eraseFromParent();
 
 	llvm::BranchInst::Create(before, body->getTerminator());
@@ -170,9 +151,7 @@ std::pair<llvm::IRBuilder<>, llvm::IRBuilder<>> generateWhile(
 
 	irb.SetInsertPoint(ip);
 
-	return std::make_pair(
-			llvm::IRBuilder<>(before->getTerminator()),
-			llvm::IRBuilder<>(body->getTerminator()));
+	return std::make_pair(llvm::IRBuilder<>(before->getTerminator()), llvm::IRBuilder<>(body->getTerminator()));
 }
 
 } // namespace capstone2llvmir
