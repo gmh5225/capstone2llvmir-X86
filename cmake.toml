@@ -44,3 +44,14 @@ compile-features = ["cxx_std_20"]
 
 
 
+[target.test-capstone2llvmir-x86]
+type = "executable"
+sources = ["test/test-capstone2llvmir-x86/**.cpp", "test/test-capstone2llvmir-x86/**.h"]
+link-libraries = [
+"capstone2llvmir-X86"
+]
+compile-features = ["cxx_std_20"]
+
+
+
+

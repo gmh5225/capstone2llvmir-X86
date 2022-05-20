@@ -134,3 +134,40 @@ target_link_libraries(capstone2llvmir-X86 PUBLIC
 unset(CMKR_TARGET)
 unset(CMKR_SOURCES)
 
+# Target test-capstone2llvmir-x86
+set(CMKR_TARGET test-capstone2llvmir-x86)
+set(test-capstone2llvmir-x86_SOURCES "")
+
+list(APPEND test-capstone2llvmir-x86_SOURCES
+	"test/test-capstone2llvmir-x86/main.cpp"
+)
+
+list(APPEND test-capstone2llvmir-x86_SOURCES
+	cmake.toml
+)
+
+set(CMKR_SOURCES ${test-capstone2llvmir-x86_SOURCES})
+add_executable(test-capstone2llvmir-x86)
+
+if(test-capstone2llvmir-x86_SOURCES)
+	target_sources(test-capstone2llvmir-x86 PRIVATE ${test-capstone2llvmir-x86_SOURCES})
+endif()
+
+get_directory_property(CMKR_VS_STARTUP_PROJECT DIRECTORY ${PROJECT_SOURCE_DIR} DEFINITION VS_STARTUP_PROJECT)
+if(NOT CMKR_VS_STARTUP_PROJECT)
+	set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT test-capstone2llvmir-x86)
+endif()
+
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${test-capstone2llvmir-x86_SOURCES})
+
+target_compile_features(test-capstone2llvmir-x86 PRIVATE
+	cxx_std_20
+)
+
+target_link_libraries(test-capstone2llvmir-x86 PRIVATE
+	capstone2llvmir-X86
+)
+
+unset(CMKR_TARGET)
+unset(CMKR_SOURCES)
+
