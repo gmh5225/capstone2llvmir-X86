@@ -371,7 +371,8 @@ public:
 		retdec::common::Address a,
 		llvm::IRBuilder<>& irb,
 		std::size_t count = 0,
-		bool stopOnBranch = false) = 0;
+		bool stopOnBranch = false,
+		bool bGenerateSpecialAsm2LlvmInstr = true) = 0;
 
 	struct TranslationResultOne
 	{

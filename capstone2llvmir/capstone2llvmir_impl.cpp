@@ -155,7 +155,9 @@ Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translate(
 	retdec::common::Address a,
 	llvm::IRBuilder<>& irb,
 	std::size_t count,
-	bool stopOnBranch)
+	bool stopOnBranch,
+	bool bGenerateSpecialAsm2LlvmInstr /*= true*/
+)
 {
 	TranslationResult res;
 
@@ -178,9 +180,16 @@ Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::translate(
 
 	while (disasmRes)
 	{
-		auto* a2l = generateSpecialAsm2LlvmInstr(irb, insn);
-
-		res.insns.push_back(std::make_pair(a2l, insn));
+		// 20220520 modified by gmh
+		auto* a2l = generateSpecialAsm2LlvmInstr(irb, insn, bGenerateSpecialAsm2LlvmInstr);
+		if (a2l)
+		{
+			res.insns.push_back(std::make_pair(a2l, insn));
+		}
+		else
+		{
+			res.insns.clear();
+		}
 		res.size = (insn->address + insn->size) - a;
 
 		translateInstruction(insn, irb);
@@ -729,14 +738,19 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateSpecialAsm2LlvmMapG
 }
 
 template <typename CInsn, typename CInsnOp>
-llvm::StoreInst*
-Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateSpecialAsm2LlvmInstr(llvm::IRBuilder<>& irb, cs_insn* i)
+llvm::StoreInst* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateSpecialAsm2LlvmInstr(
+	llvm::IRBuilder<>& irb, cs_insn* i, bool generate /*= true*/)
 {
 	retdec::common::Address a = i->address;
 	auto* gv = getAsm2LlvmMapGlobalVariable();
 	auto* ci = llvm::ConstantInt::get(gv->getValueType(), a, false);
-	auto* s = irb.CreateStore(ci, gv, true);
-	return s;
+	if (generate)
+	{
+		auto* s = irb.CreateStore(ci, gv, true);
+		return s;
+	}
+
+	return nullptr;
 }
 
 template <typename CInsn, typename CInsnOp>

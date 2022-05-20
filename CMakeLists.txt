@@ -27,6 +27,8 @@ if(CMKR_ROOT_PROJECT)
 	configure_file(cmake.toml cmake.toml COPYONLY)
 endif()
 
+include(configurations.cmake)
+
 project(capstone2llvmir-X86)
 
 # utils
@@ -128,7 +130,6 @@ target_link_libraries(capstone2llvmir-X86 PUBLIC
 	LLVMSupport
 	LLVMAnalysis
 	LLVMCore
-	LLVMCodeGen
 )
 
 unset(CMKR_TARGET)

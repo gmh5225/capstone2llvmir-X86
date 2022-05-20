@@ -1,6 +1,9 @@
 # Reference: https://build-cpp.github.io/cmkr/cmake-toml
 [project]
 name = "capstone2llvmir-X86"
+include-before = [
+	"configurations.cmake"
+]
 
 [subdir.utils]
 [subdir.common]
@@ -36,8 +39,7 @@ link-libraries = [
 "retdec-utils",
 "LLVMSupport", 
 "LLVMAnalysis",
-"LLVMCore",
-"LLVMCodeGen"
+"LLVMCore"
 ]
 
 compile-features = ["cxx_std_20"]

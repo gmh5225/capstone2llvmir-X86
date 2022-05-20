@@ -67,7 +67,8 @@ public:
 		retdec::common::Address a,
 		llvm::IRBuilder<>& irb,
 		std::size_t count = 0,
-		bool stopOnBranch = false) override;
+		bool stopOnBranch = false,
+		bool bGenerateSpecialAsm2LlvmInstr = true) override;
 	virtual TranslationResultOne
 	translateOne(const uint8_t*& bytes, std::size_t& size, retdec::common::Address& a, llvm::IRBuilder<>& irb) override;
 	//
@@ -265,7 +266,7 @@ protected:
 	virtual void generateEnvironment();
 
 	virtual void generateSpecialAsm2LlvmMapGlobal();
-	virtual llvm::StoreInst* generateSpecialAsm2LlvmInstr(llvm::IRBuilder<>& irb, cs_insn* i);
+	virtual llvm::StoreInst* generateSpecialAsm2LlvmInstr(llvm::IRBuilder<>& irb, cs_insn* i, bool generate = true);
 	virtual void generateCallFunction();
 	virtual llvm::CallInst* generateCallFunctionCall(llvm::IRBuilder<>& irb, llvm::Value* t);
 	virtual llvm::CallInst* generateCondCallFunctionCall(llvm::IRBuilder<>& irb, llvm::Value* cond, llvm::Value* t);
