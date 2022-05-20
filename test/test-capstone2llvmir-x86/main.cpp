@@ -211,6 +211,19 @@ void test_read_coff()
 		printf("dllname=%s,symbolName=%s,exportRVA=0x%x", dllName.data(), symbolName.data(), exportRVA);
 	}
 
+
+	{
+		const object::coff_section* coff_sec = nullptr;
+		parser.get()->getSection(".text", coff_sec);
+		if (coff_sec)
+		{
+			printf("qqq:%s\n", coff_sec->Name);
+			// b4
+			auto PointerToRawData = coff_sec->PointerToRawData;
+			printf("PointerToRawData:%p\n", PointerToRawData);
+		}
+	}
+
 	for (auto& Section: parser.get()->sections())
 	{
 		StringRef Name = "";
@@ -248,6 +261,46 @@ void test_read_coff()
 			{
 				printf("symname:%s\n", symname.data());
 			}
+
+
+			// printf("SymRef.getValue()=%p", SymRef.getGeneric()->Value);
+			/*ArrayRef<uint8_t> AuxData = parser.get()->getSymbolAuxData(SymRef);
+			for (auto x: AuxData)
+			{
+				printf("%x\n", x);
+			}*/
+			// printf("getStringTableOffset=%p", SymRef.getStringTableOffset().Offset);
+
+			/*auto bufferstart = (unsigned char*)FileOrErr.get()->getMemBufferRef().getBufferStart();
+			printf("bufferstart=%p", bufferstart);
+			auto ratptr = (unsigned char*)SymRef.getRawPtr();
+			printf("rawptr=%p", ratptr);
+			auto of = ratptr - bufferstart;
+			printf("of=%p\n", of);
+
+			auto coffsectionheader = (object::coff_section*)ratptr;
+			printf("PointerToRawData:%p\n", coffsectionheader->PointerToRawData);
+
+			unsigned char* coffsectionheaderVA = coffsectionheader->PointerToRawData + bufferstart;
+			printf("coffsectionheaderVA:%p\n", coffsectionheaderVA);*/
+		}
+	}
+
+
+	{
+		for (auto& sym: parser.get()->symbols())
+		{
+			auto addr = sym.getAddress();
+			auto name = sym.getName();
+			auto val = sym.getValue();
+			auto raw = sym.getRawDataRefImpl().p;
+			if (!name)
+			{
+				continue;
+			}
+
+
+			printf("name=%s,addr=%p,val=%p\n", name.get().data(), addr.get(), val);
 		}
 	}
 }
