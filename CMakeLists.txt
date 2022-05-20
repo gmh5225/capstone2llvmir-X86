@@ -72,6 +72,12 @@ list(APPEND capstone2llvmir-X86_SOURCES
 	"capstone2llvmir/x86/x86.cpp"
 	"capstone2llvmir/x86/x86_init.cpp"
 	"capstone2llvmir/x86/x86_impl.h"
+	"include/retdec/capstone2llvmir/capstone2llvmir.h"
+	"include/retdec/capstone2llvmir/exceptions.h"
+	"include/retdec/capstone2llvmir/x86/x86.h"
+	"include/retdec/capstone2llvmir/x86/x86_defs.h"
+	"include/retdec/capstone2llvmir/x86/x86.h"
+	"include/retdec/capstone2llvmir/x86/x86_defs.h"
 )
 
 list(APPEND capstone2llvmir-X86_SOURCES
@@ -91,7 +97,16 @@ add_definitions(
 		${LLVM_DEFINITIONS}
 		${CLANG_DEFINITIONS}
 )
+target_compile_features(capstone2llvmir-X86 PUBLIC
+	cxx_std_20
+)
+
 target_include_directories(capstone2llvmir-X86 PUBLIC
+	"./"
+	"${CMAKE_SOURCE_DIR}/include"
+	"${CMAKE_SOURCE_DIR}/include/retdec"
+	"${CMAKE_SOURCE_DIR}/include/whereami"
+	"capstone-retdec/include"
 	${LLVM_INCLUDE_DIRS}
 	${CLANG_INCLUDE_DIRS}
 )
@@ -102,6 +117,9 @@ target_link_directories(capstone2llvmir-X86 PUBLIC
 )
 
 target_link_libraries(capstone2llvmir-X86 PUBLIC
+	capstone-static
+	retdec-common
+	retdec-utils
 	LLVMSupport
 	LLVMAnalysis
 	LLVMCore

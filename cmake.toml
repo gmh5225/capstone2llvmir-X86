@@ -5,29 +5,48 @@ name = "capstone2llvmir-X86"
 [find-package.LLVM]
 required = true
 config = true
-[find-package.Clang]
-required = true
-config = true
 
 [subdir.utils]
 [subdir.common]
 
 [target.capstone2llvmir-X86]
 type = "static"
+headers = [
+"include/retdec/capstone2llvmir/**.h",
+"include/retdec/capstone2llvmir/x86/**.h"
+]
+
 sources = [
     "capstone2llvmir/**.cpp", 
     "capstone2llvmir/**.h", 
     "capstone2llvmir/x86/**.cpp",
     "capstone2llvmir/x86/**.h"
-    ]
-include-directories = ["${LLVM_INCLUDE_DIRS}", "${CLANG_INCLUDE_DIRS}"]
-link-directories = ["${LLVM_LIBRARY_DIRS}", "${CLANG_LIBRARY_DIRS}"]
-add-definitions = ["${LLVM_DEFINITIONS}", "${CLANG_DEFINITIONS}"]
+]
+
+include-directories = [
+"./",
+"${CMAKE_SOURCE_DIR}/include", 
+"${CMAKE_SOURCE_DIR}/include/retdec",
+"${CMAKE_SOURCE_DIR}/include/whereami",
+"capstone-retdec/include",
+"${LLVM_INCLUDE_DIRS}"
+]
+
+link-directories = ["${LLVM_LIBRARY_DIRS}"]
+
+add-definitions = ["${LLVM_DEFINITIONS}"]
+
 link-libraries = [
+"capstone-static",
+"retdec-common", 
+"retdec-utils",
 "LLVMSupport", 
 "LLVMAnalysis",
 "LLVMCore",
 "LLVMCodeGen"
 ]
+
+compile-features = ["cxx_std_20"]
+
 
 

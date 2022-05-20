@@ -1,3 +1,6 @@
 [submodule "capstone-retdec"]
 	path = capstone-retdec
 	url = https://github.com/gmh5225/capstone-retdec
+[submodule "llvm-retdec"]
+	path = llvm-retdec
+	url = https://github.com/gmh5225/llvm-retdec
