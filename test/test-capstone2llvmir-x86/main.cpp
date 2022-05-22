@@ -305,11 +305,73 @@ void test_read_coff()
 	}
 }
 
+
+auto CODE444 = retdec::utils::hexStringToBytes(
+	"55 8B EC 83 7D 08 02 7D 1E 68 5C A8 41 00 E8 8C 32 00 00 83 C4 04 68 84 A8 41 00 E8 FD 4F 00 00 83 C4 04 33 C0 5D "
+	"C3 8B 45 0C FF 70 04 68 78 A8 41 00 E8 99 FF FF FF 83 C4 08 68 84 A8 41 00 E8 D9 4F 00 00 83 C4 04 33 C0 5D C3");
+
+void test_capstone2llvmir_func()
+{
+	printf("test_capstone2llvmir_func: begin\n");
+
+	llvm::LLVMContext ctx;
+	llvm::Module module("test_capstone2llvmir_func", ctx);
+
+	auto* f = llvm::Function::Create(
+		llvm::FunctionType::get(llvm::Type::getVoidTy(ctx), false),
+		llvm::GlobalValue::ExternalLinkage,
+		"root",
+		&module);
+	llvm::BasicBlock::Create(module.getContext(), "entry", f);
+	llvm::IRBuilder<> irb(&f->front());
+
+	auto* ret = irb.CreateRetVoid();
+	irb.SetInsertPoint(ret);
+
+
+	try
+	{
+		auto BASEADDR = 0x401040;
+		// create arch (capstone)
+		auto c2l = Capstone2LlvmIrTranslator::createArch(CS_ARCH_X86, &module, CS_MODE_32, CS_MODE_LITTLE_ENDIAN);
+		c2l->translate(CODE444.data(), CODE444.size(), BASEADDR, irb, 0, false, false);
+	}
+	catch (const BaseError& e)
+	{
+		Log::error() << e.what() << std::endl;
+		assert(false);
+	}
+	catch (...)
+	{
+		Log::error() << "Some unhandled exception" << std::endl;
+	}
+
+	for (auto& F: module)
+	{
+		// filter declaration
+		if (F.isDeclaration())
+		{
+			continue;
+		}
+
+		auto FuncName = std::string(F.getName());
+		std::cout << "FuncName=" << FuncName << std::endl;
+	}
+
+	std::error_code ec;
+	llvm::raw_fd_ostream out(CAPSTONE2LLVMIR_SRC_DIR "/sample/test_capstone2llvmir_func.ll", ec, llvm::sys::fs::F_None);
+	module.print(out, nullptr);
+
+
+	printf("test_capstone2llvmir_func: end\n");
+}
+
 int main()
 {
 	// test_capstone2llvmir_1();
 	// test_capstone2llvmir_2();
-	test_read_coff();
+	// test_read_coff();
+	test_capstone2llvmir_func();
 	system("pause");
 	return 0;
 }
