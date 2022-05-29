@@ -306,9 +306,7 @@ void test_read_coff()
 }
 
 
-auto CODE444 = retdec::utils::hexStringToBytes(
-	"55 8B EC 83 7D 08 02 7D 1E 68 5C A8 41 00 E8 8C 32 00 00 83 C4 04 68 84 A8 41 00 E8 FD 4F 00 00 83 C4 04 33 C0 5D "
-	"C3 8B 45 0C FF 70 04 68 78 A8 41 00 E8 99 FF FF FF 83 C4 08 68 84 A8 41 00 E8 D9 4F 00 00 83 C4 04 33 C0 5D C3");
+auto CODE444 = retdec::utils::hexStringToBytes("50 8B 44 24 04 87 05 41 F0 41 00 58 83 C4 04 50 B8 CC CC CC CC 8D 80 9C 8F DB 74 87 05 24 F0 41 00 58 90 90 90 90 90 90 00 90 90 90 90 90 90 90 90 90 90 90 50 66 B8 EB E9 66 87 05 24 F0 41 00 B8 BB BB BB BB 87 04 24 C3");
 
 void test_capstone2llvmir_func()
 {
@@ -331,7 +329,7 @@ void test_capstone2llvmir_func()
 
 	try
 	{
-		auto BASEADDR = 0x401040;
+		auto BASEADDR = 0x41F000;
 		// create arch (capstone)
 		auto c2l = Capstone2LlvmIrTranslator::createArch(CS_ARCH_X86, &module, CS_MODE_32, CS_MODE_LITTLE_ENDIAN);
 		c2l->translate(CODE444.data(), CODE444.size(), BASEADDR, irb, 0, false, false);
