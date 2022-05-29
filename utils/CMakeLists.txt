@@ -51,9 +51,9 @@ target_compile_features(retdec-utils PUBLIC
 )
 
 target_include_directories(retdec-utils PUBLIC
-	"${CMAKE_SOURCE_DIR}/include"
-	"${CMAKE_SOURCE_DIR}/include/retdec"
-	"${CMAKE_SOURCE_DIR}/include/whereami"
+	"../include"
+	"../include/retdec"
+	"../include/whereami"
 )
 
 unset(CMKR_TARGET)

@@ -11,9 +11,9 @@ sources = [
 ]
 
 include-directories = [
-"${CMAKE_SOURCE_DIR}/include", 
-"${CMAKE_SOURCE_DIR}/include/retdec",
-"${CMAKE_SOURCE_DIR}/include/whereami"
+"../include", 
+"../include/retdec",
+"../include/whereami"
 ]
 
 compile-features = ["cxx_std_20"]

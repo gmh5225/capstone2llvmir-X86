@@ -46,9 +46,9 @@ target_compile_features(retdec-common PUBLIC
 )
 
 target_include_directories(retdec-common PUBLIC
-	"${CMAKE_SOURCE_DIR}/include"
-	"${CMAKE_SOURCE_DIR}/include/retdec"
-	"${CMAKE_SOURCE_DIR}/include/whereami"
+	"../include"
+	"../include/retdec"
+	"../include/whereami"
 )
 
 target_link_libraries(retdec-common PUBLIC

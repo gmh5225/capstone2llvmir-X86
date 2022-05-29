@@ -116,9 +116,9 @@ target_compile_features(capstone2llvmir-X86 PUBLIC
 
 target_include_directories(capstone2llvmir-X86 PUBLIC
 	"./"
-	"${CMAKE_SOURCE_DIR}/include"
-	"${CMAKE_SOURCE_DIR}/include/retdec"
-	"${CMAKE_SOURCE_DIR}/include/whereami"
+	"include"
+	"include/retdec"
+	"include/whereami"
 	"capstone-retdec/include"
 	"llvm-retdec/include"
 )

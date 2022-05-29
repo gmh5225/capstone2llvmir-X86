@@ -8,9 +8,9 @@ sources = [
 ]
 
 include-directories = [
-"${CMAKE_SOURCE_DIR}/include", 
-"${CMAKE_SOURCE_DIR}/include/retdec",
-"${CMAKE_SOURCE_DIR}/include/whereami"
+"../include", 
+"../include/retdec",
+"../include/whereami"
 ]
 
 link-libraries = ["retdec-utils"]
