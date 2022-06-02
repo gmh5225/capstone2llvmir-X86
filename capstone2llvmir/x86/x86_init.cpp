@@ -27,7 +27,7 @@ void Capstone2LlvmIrTranslatorX86_impl::initializeRegNameMap()
 		//
 		{X86_REG_CF, "cf"},
 		{X86_REG_PF, "pf"},
-		{X86_REG_AF, "az"},
+		{X86_REG_AF, "af"},
 		{X86_REG_ZF, "zf"},
 		{X86_REG_SF, "sf"},
 		{X86_REG_TF, "tf"},
