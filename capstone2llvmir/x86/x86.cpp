@@ -3934,7 +3934,25 @@ void Capstone2LlvmIrTranslatorX86_impl::translateJCc(cs_insn* i, cs_x86* xi, llv
 	}
 
 	op0 = loadOpUnary(xi, irb);
-	generateCondBranchFunctionCall(irb, cond, op0);
+	auto callInst = generateCondBranchFunctionCall(irb, cond, op0);
+	if (callInst && callInst->getCalledFunction())
+	{
+		auto jccName = cs_insn_name(_handle, i->id);
+		if (jccName)
+		{
+			std::string calledName = jccName;
+			auto op0ConstInt = llvm::dyn_cast<llvm::ConstantInt>(op0);
+			if (op0ConstInt)
+			{
+				calledName += "_";
+				std::stringstream ss;
+				ss << std::hex << op0ConstInt->getZExtValue();
+				calledName += ss.str();
+			}
+			
+			callInst->getCalledFunction()->setName(calledName);
+		}
+	}
 }
 
 /**

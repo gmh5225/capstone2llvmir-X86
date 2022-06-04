@@ -723,7 +723,32 @@ void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateSpecialAsm2LlvmMapG
 {
 	llvm::GlobalValue::LinkageTypes lt = llvm::GlobalValue::InternalLinkage;
 	llvm::Constant* initializer = nullptr;
-	auto* t = llvm::IntegerType::getInt64Ty(_module->getContext());
+
+	//auto& DataLayout = _module->getDataLayout();
+	//auto PointerSize = DataLayout.getPointerSize();
+
+	////add 32/64
+	//llvm::IntegerType* t;
+	//if (PointerSize == 8)
+	//{
+	//	t = llvm::IntegerType::getInt64Ty(_module->getContext());
+	//}
+	//else
+	//{
+	//	t = llvm::IntegerType::getInt32Ty(_module->getContext());
+	//}
+	
+	// add 32/64
+	llvm::IntegerType* t;
+	if (sizeof(size_t) == 8)
+	{
+		t = llvm::IntegerType::getInt64Ty(_module->getContext());
+	}
+	else
+	{
+		t = llvm::IntegerType::getInt32Ty(_module->getContext());
+	}
+
 	if (initializer == nullptr && lt != llvm::GlobalValue::LinkageTypes::ExternalLinkage)
 	{
 		initializer = llvm::ConstantInt::get(t, 0);
@@ -747,6 +772,14 @@ llvm::StoreInst* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateSpecial
 	if (generate)
 	{
 		auto* s = irb.CreateStore(ci, gv, true);
+
+		// Set gv name
+		std::string gvName = "oriaddr_";
+		std::stringstream ss;
+		ss << std::hex << i->address;
+		gvName += ss.str();
+		gv->setName(gvName);
+		
 		return s;
 	}
 
