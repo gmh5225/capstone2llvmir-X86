@@ -116,7 +116,7 @@ target_compile_features(capstone2llvmir-X86 PUBLIC
 
 target_include_directories(capstone2llvmir-X86 PUBLIC
 	"./"
-	"include"
+	include
 	"include/retdec"
 	"include/whereami"
 	"capstone-retdec/include"
