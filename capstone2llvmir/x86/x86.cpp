@@ -2179,7 +2179,25 @@ void Capstone2LlvmIrTranslatorX86_impl::translateCall(cs_insn* i, cs_x86* xi, ll
 	storeRegister(getStackPointerRegister(), sub, irb);
 
 	op0 = loadOpUnary(xi, irb);
-	generateCallFunctionCall(irb, op0);
+	auto callInst = generateCallFunctionCall(irb, op0);
+	if (callInst && callInst->getCalledFunction())
+	{
+		auto callName = cs_insn_name(_handle, i->id);
+		if (callName)
+		{
+			std::string calledName = callName;
+			auto op0ConstInt = llvm::dyn_cast<llvm::ConstantInt>(op0);
+			if (op0ConstInt)
+			{
+				calledName += "_";
+				std::stringstream ss;
+				ss << std::hex << op0ConstInt->getZExtValue();
+				calledName += ss.str();
+			}
+
+			callInst->getCalledFunction()->setName(calledName);
+		}
+	}
 }
 
 /**
@@ -2904,7 +2922,26 @@ void Capstone2LlvmIrTranslatorX86_impl::translateRet(cs_insn* i, cs_x86* xi, llv
 
 	storeRegister(getStackPointerRegister(), add, irb);
 
-	generateReturnFunctionCall(irb, l);
+	auto retInst = generateReturnFunctionCall(irb, l);
+	if (retInst)
+	{
+		auto retName = cs_insn_name(_handle, i->id);
+		if (retName)
+		{
+			std::string calledName = retName;
+			if (op0)
+			{
+				if (auto op0ConstInt = llvm::dyn_cast<llvm::ConstantInt>(op0))
+				{
+					calledName += "_";
+					std::stringstream ss;
+					ss << std::hex << op0ConstInt->getZExtValue();
+					calledName += ss.str();
+				}
+			}
+			retInst->getCalledFunction()->setName(calledName);
+		}
+	}
 }
 
 /**
@@ -3949,7 +3986,7 @@ void Capstone2LlvmIrTranslatorX86_impl::translateJCc(cs_insn* i, cs_x86* xi, llv
 				ss << std::hex << op0ConstInt->getZExtValue();
 				calledName += ss.str();
 			}
-			
+
 			callInst->getCalledFunction()->setName(calledName);
 		}
 	}

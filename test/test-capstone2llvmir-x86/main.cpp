@@ -306,7 +306,8 @@ void test_read_coff()
 }
 
 
-auto CODE444 = retdec::utils::hexStringToBytes("50 8B 44 24 04 87 05 41 F0 41 00 58 83 C4 04 50 B8 CC CC CC CC 8D 80 9C 8F DB 74 87 05 24 F0 41 00 58 90 90 90 90 90 90 00 90 90 90 90 90 90 90 90 90 90 90 50 66 B8 EB E9 66 87 05 24 F0 41 00 B8 BB BB BB BB 87 04 24 C3");
+//auto CODE444 = retdec::utils::hexStringToBytes("50 8B 44 24 04 87 05 41 F0 41 00 58 83 C4 04 50 B8 CC CC CC CC 8D 80 9C 8F DB 74 87 05 24 F0 41 00 58 90 90 90 90 90 90 00 90 90 90 90 90 90 90 90 90 90 90 50 66 B8 EB E9 66 87 05 24 F0 41 00 B8 BB BB BB BB 87 04 24 C3");
+auto CODE444 = retdec::utils::hexStringToBytes("C2 08 00");
 
 void test_capstone2llvmir_func()
 {
