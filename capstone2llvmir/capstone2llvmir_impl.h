@@ -267,15 +267,15 @@ protected:
 
 	virtual void generateSpecialAsm2LlvmMapGlobal();
 	virtual llvm::StoreInst* generateSpecialAsm2LlvmInstr(llvm::IRBuilder<>& irb, cs_insn* i, bool generate = true);
-	virtual void generateCallFunction();
+	virtual llvm::Function* generateCallFunction();
 	virtual llvm::CallInst* generateCallFunctionCall(llvm::IRBuilder<>& irb, llvm::Value* t);
 	virtual llvm::CallInst* generateCondCallFunctionCall(llvm::IRBuilder<>& irb, llvm::Value* cond, llvm::Value* t);
-	virtual void generateReturnFunction();
+	virtual llvm::Function* generateReturnFunction();
 	virtual llvm::CallInst* generateReturnFunctionCall(llvm::IRBuilder<>& irb, llvm::Value* t);
 	virtual llvm::CallInst* generateCondReturnFunctionCall(llvm::IRBuilder<>& irb, llvm::Value* cond, llvm::Value* t);
-	virtual void generateBranchFunction();
+	virtual llvm::Function* generateBranchFunction();
 	virtual llvm::CallInst* generateBranchFunctionCall(llvm::IRBuilder<>& irb, llvm::Value* t);
-	virtual void generateCondBranchFunction();
+	virtual llvm::Function* generateCondBranchFunction();
 	virtual llvm::CallInst* generateCondBranchFunctionCall(llvm::IRBuilder<>& irb, llvm::Value* cond, llvm::Value* t);
 
 	virtual llvm::GlobalVariable* createRegister(

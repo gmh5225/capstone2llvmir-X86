@@ -787,13 +787,14 @@ llvm::StoreInst* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateSpecial
 }
 
 template <typename CInsn, typename CInsnOp>
-void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateCallFunction()
+llvm::Function* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateCallFunction()
 {
 	auto* ft = llvm::FunctionType::get(
 		llvm::Type::getVoidTy(_module->getContext()),
 		{llvm::Type::getIntNTy(_module->getContext(), getArchBitSize())},
 		false);
 	_callFunction = llvm::Function::Create(ft, llvm::GlobalValue::LinkageTypes::ExternalLinkage, "", _module);
+	return _callFunction;
 }
 
 template <typename CInsn, typename CInsnOp>
@@ -802,7 +803,8 @@ Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateCallFunctionCall(llvm::I
 {
 	auto* a1t = _callFunction->arg_begin()->getType();
 	t = irb.CreateSExtOrTrunc(t, a1t);
-	_branchGenerated = irb.CreateCall(_callFunction, {t});
+	llvm::Function* newCall = generateCallFunction();
+	_branchGenerated = irb.CreateCall(newCall, {t});
 	return _branchGenerated;
 }
 
@@ -814,19 +816,21 @@ llvm::CallInst* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateCondCall
 
 	auto* a1t = _callFunction->arg_begin()->getType();
 	t = bodyIrb.CreateSExtOrTrunc(t, a1t);
-	_branchGenerated = bodyIrb.CreateCall(_callFunction, {t});
+	llvm::Function* newCall = generateCallFunction();
+	_branchGenerated = bodyIrb.CreateCall(newCall, {t});
 	_inCondition = true;
 	return _branchGenerated;
 }
 
 template <typename CInsn, typename CInsnOp>
-void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateReturnFunction()
+llvm::Function* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateReturnFunction()
 {
 	auto* ft = llvm::FunctionType::get(
 		llvm::Type::getVoidTy(_module->getContext()),
 		{llvm::Type::getIntNTy(_module->getContext(), getArchBitSize())},
 		false);
 	_returnFunction = llvm::Function::Create(ft, llvm::GlobalValue::LinkageTypes::ExternalLinkage, "", _module);
+	return _returnFunction;
 }
 
 template <typename CInsn, typename CInsnOp>
@@ -835,7 +839,8 @@ Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateReturnFunctionCall(llvm:
 {
 	auto* a1t = _returnFunction->arg_begin()->getType();
 	t = irb.CreateSExtOrTrunc(t, a1t);
-	_branchGenerated = irb.CreateCall(_returnFunction, {t});
+	llvm::Function* newReturn = generateReturnFunction();
+	_branchGenerated = irb.CreateCall(newReturn, {t});
 	return _branchGenerated;
 }
 
@@ -847,19 +852,21 @@ llvm::CallInst* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateCondRetu
 
 	auto* a1t = _returnFunction->arg_begin()->getType();
 	t = bodyIrb.CreateSExtOrTrunc(t, a1t);
-	_branchGenerated = bodyIrb.CreateCall(_returnFunction, {t});
+	llvm::Function* newReturn = generateReturnFunction();
+	_branchGenerated = bodyIrb.CreateCall(newReturn, {t});
 	_inCondition = true;
 	return _branchGenerated;
 }
 
 template <typename CInsn, typename CInsnOp>
-void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateBranchFunction()
+llvm::Function* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateBranchFunction()
 {
 	auto* ft = llvm::FunctionType::get(
 		llvm::Type::getVoidTy(_module->getContext()),
 		{llvm::Type::getIntNTy(_module->getContext(), getArchBitSize())},
 		false);
 	_branchFunction = llvm::Function::Create(ft, llvm::GlobalValue::LinkageTypes::ExternalLinkage, "", _module);
+	return _branchFunction;
 }
 
 template <typename CInsn, typename CInsnOp>
@@ -868,17 +875,19 @@ Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateBranchFunctionCall(llvm:
 {
 	auto* a1t = _branchFunction->arg_begin()->getType();
 	t = irb.CreateSExtOrTrunc(t, a1t);
-	_branchGenerated = irb.CreateCall(_branchFunction, {t});
+	llvm::Function* newBranch = generateBranchFunction();
+	_branchGenerated = irb.CreateCall(newBranch, {t});
 	return _branchGenerated;
 }
 
 template <typename CInsn, typename CInsnOp>
-void Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateCondBranchFunction()
+llvm::Function* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateCondBranchFunction()
 {
 	std::vector<llvm::Type*> params = {
 		llvm::Type::getInt1Ty(_module->getContext()), llvm::Type::getIntNTy(_module->getContext(), getArchBitSize())};
 	auto* ft = llvm::FunctionType::get(llvm::Type::getVoidTy(_module->getContext()), params, false);
 	_condBranchFunction = llvm::Function::Create(ft, llvm::GlobalValue::LinkageTypes::ExternalLinkage, "", _module);
+	return _condBranchFunction;
 }
 
 template <typename CInsn, typename CInsnOp>
@@ -889,7 +898,8 @@ llvm::CallInst* Capstone2LlvmIrTranslator_impl<CInsn, CInsnOp>::generateCondBran
 	++aIt;
 	auto* a1t = aIt->getType();
 	t = irb.CreateSExtOrTrunc(t, a1t);
-	_branchGenerated = irb.CreateCall(_condBranchFunction, {cond, t});
+	auto newCondBranch = generateCondBranchFunction();
+	_branchGenerated = irb.CreateCall(newCondBranch, {cond, t});
 	return _branchGenerated;
 }
 
